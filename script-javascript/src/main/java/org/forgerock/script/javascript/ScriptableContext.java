@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Provides a {@code Scriptable} wrapper for an abstract {@code Context} object.
@@ -148,7 +149,7 @@ class ScriptableContext extends NativeObject implements Wrapper {
     }
 
     private Map<String, Object> listValuesAsStrings(JsonValue values) {
-        final Map<String, Object> map = new LinkedHashMap<String, Object>();
+        final Map<String, Object> map = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
         for (final String key : values.keys()) {
             final StringBuilder sb = new StringBuilder();
             for (final Object value : values.get(key).asList()) {
