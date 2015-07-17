@@ -33,26 +33,21 @@ import javax.script.ScriptException;
 public class ScriptCompilationException extends ScriptException {
 
     /** Serializable class a version number. */
-    static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 2L;
 
     /**
-     * Constructs a new exception with the specified detail message.
+     * Constructs a new exception with the specified detail message and cause.
      */
-    public ScriptCompilationException(String message) {
+    public ScriptCompilationException(String message, Exception cause) {
         super(message);
-    }
-
-    /**
-     * Constructs a new exception with the specified cause.
-     */
-    public ScriptCompilationException(Exception e) {
-        super(e);
+        initCause(cause);
     }
 
     /**
      * Constructs a new exception with the specified detail message.
      */
-    public ScriptCompilationException(String message, String fileName, int lineNumber, int columnNumber) {
+    public ScriptCompilationException(String message, Exception cause, String fileName, int lineNumber, int columnNumber) {
         super(message, fileName, lineNumber, columnNumber);
+        initCause(cause);
     }
 }
