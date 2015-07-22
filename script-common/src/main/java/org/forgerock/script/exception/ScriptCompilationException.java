@@ -33,7 +33,7 @@ import javax.script.ScriptException;
 public class ScriptCompilationException extends ScriptException {
 
     /** Serializable class a version number. */
-    static final long serialVersionUID = 2L;
+    static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new exception with the specified detail message and cause.
