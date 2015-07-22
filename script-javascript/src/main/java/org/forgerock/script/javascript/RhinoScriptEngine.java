@@ -238,9 +238,9 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         try {
             return cx.compileReader(scriptReader, name, 1, null);
         } catch (IOException ioe) {
-            throw new ScriptCompilationException(ioe);
+            throw new ScriptCompilationException(ioe.getMessage(), ioe);
         } catch (RhinoException re) {
-            throw new ScriptCompilationException(re.getMessage(), re.sourceName(), re.lineNumber(), re.columnNumber());
+            throw new ScriptCompilationException(re.getMessage(), re, re.sourceName(), re.lineNumber(), re.columnNumber());
         } finally {
             Context.exit();
             if (scriptReader != null) {

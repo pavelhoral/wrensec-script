@@ -237,7 +237,7 @@ public class GroovyScript implements CompiledScript {
         } catch (ScriptException e) {
             throw e;
         } catch (CompilationFailedException e) {
-            throw new ScriptCompilationException(e);
+            throw new ScriptCompilationException(e.getMessage(), e);
         } catch (Exception e) {
             throw new ScriptException(e);
         } finally {

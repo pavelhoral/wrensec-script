@@ -211,7 +211,7 @@ public class GroovyScriptEngineImpl extends AbstractScriptEngine {
             handler.setCompiledScript(new GroovyScript(codeSource.getName(), this));
         } catch (CompilationFailedException e) {
             handler.handleException(e);
-            throw new ScriptCompilationException(e);
+            throw new ScriptCompilationException(e.getMessage(), e);
         } catch (Exception e) {
             handler.handleException(e);
             throw new ScriptException(e);
