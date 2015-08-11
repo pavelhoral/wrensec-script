@@ -148,6 +148,7 @@ class ScriptableContext extends NativeObject implements Wrapper {
         } else if (contexts.containsKey(name)) {
             if (HTTP_CONTEXT_NAME.equals(name)) {
                 final JsonValue value = contexts.get(name).toJsonValue();
+                // TODO replace with CHF-27 script-friendly Context representation
                 // Join all header/parameter values for the same header/parameter into comma-separated-value String
                 value.put(/*HttpContext.ATTR_HEADERS*/"headers", listValuesAsStrings(value.get(/*HttpContext.ATTR_HEADERS*/"headers")));
                 value.put(/*HttpContext.ATTR_PARAMETERS*/"parameters", listValuesAsStrings(value.get(/*HttpContext.ATTR_PARAMETERS*/"parameters")));
