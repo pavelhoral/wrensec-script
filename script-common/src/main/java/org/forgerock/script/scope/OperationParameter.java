@@ -24,56 +24,39 @@
 
 package org.forgerock.script.scope;
 
-import org.forgerock.json.fluent.JsonValue;
-import org.forgerock.json.resource.Connection;
-import org.forgerock.json.resource.Context;
+import org.forgerock.http.Context;
 import org.forgerock.json.resource.InternalServerErrorException;
-import org.forgerock.json.resource.PersistenceConfig;
 import org.forgerock.json.resource.ResourceException;
-import org.forgerock.json.resource.ServerContext;
-import org.forgerock.json.resource.ServiceUnavailableException;
 
 /**
- * A NAME does ...
- * 
- * @author Laszlo Hordos
+ * OperationParameter holds the Context associated with the request that invoked a script.
  */
 public class OperationParameter implements Parameter {
 
     protected final Context context;
-    protected final String connectionId;
-    protected final PersistenceConfig persistenceConfig;
 
-    public OperationParameter(final Context context, final String connectionId,
-            final PersistenceConfig persistenceConfig) {
+    public OperationParameter(final Context context) {
         this.context = context;
-        this.connectionId = connectionId;
-        this.persistenceConfig = persistenceConfig;
     }
 
     /**
-     * Returns the internal connection.
+     * Returns the internal context.
      * 
-     * @return The internal connection.
+     * @return The internal context..
      * @throws org.forgerock.json.resource.NotFoundException
      *             If no such connection exists.
      * @throws ResourceException
      *             If the connection could not be obtained for some other reason
      *             (e.g. due to a configuration or initialization problem).
      */
-    public ServerContext getServerContext(JsonValue savedContext) throws ResourceException {
-        if (null != savedContext) {
-            return new ServerContext(savedContext, getPersistenceConfig());
-        } else if (context instanceof ServerContext) {
-            return (ServerContext) context;
-        } else if (null != context) {
-            return new ServerContext(context);
-        }
-        throw new InternalServerErrorException("Failed to get ServerContext.");
-    }
+    public Context getContext(Context savedContext) throws ResourceException {
 
-    public PersistenceConfig getPersistenceConfig() {
-        return persistenceConfig;
+        if (null != savedContext) {
+            return savedContext;
+        } else if (null != context) {
+            return context;
+        }
+        throw new InternalServerErrorException("Failed to get Context.");
     }
 
 }

@@ -24,7 +24,7 @@
 
 package org.forgerock.script.exception;
 
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ResourceException;
 
 import javax.script.ScriptException;
@@ -94,7 +94,7 @@ public class ScriptThrownException extends ScriptException {
      *            a default message to use if no explicit message is set, or
      *            null if value toString shoudl be used instead
      * @return the appropriate JsonResourceException
-     * @throws org.forgerock.json.fluent.JsonValueException
+     * @throws org.forgerock.json.JsonValueException
      *             when value can not be converted to ResourceException
      */
     public ResourceException toResourceException(int defaultCode, String defaultMsg) {

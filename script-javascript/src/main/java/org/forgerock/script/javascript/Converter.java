@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.forgerock.json.fluent.JsonPointer;
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.json.JsonPointer;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ActionRequest;
 import org.forgerock.json.resource.CreateRequest;
 import org.forgerock.json.resource.DeleteRequest;
@@ -111,10 +111,8 @@ class Converter {
             return wrap(parameter, (JsonValue) value, scope, doCopy);
         } else if (value instanceof JsonPointer) {
             return wrap(parameter, value.toString(), scope, doCopy);
-        } else if (value instanceof Request) {
-            return wrap(parameter, (Request) value, scope);
-        } else if (value instanceof org.forgerock.json.resource.Context) {
-           return wrap(parameter, (org.forgerock.json.resource.Context) value, scope);
+        } else if (value instanceof org.forgerock.http.Context) {
+           return wrap(parameter, (org.forgerock.http.Context) value, scope);
         } else {
             return Context.javaToJS(value, scope);
         }
@@ -161,48 +159,7 @@ class Converter {
         }
     }
 
-    public static final Object wrap(final Parameter parameter, final Request value, final Scriptable scope) {
-        if (value instanceof CreateRequest) {
-            ScriptableCreateRequest result = new ScriptableCreateRequest(parameter, (CreateRequest) value);
-            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
-            return result;
-        }
-        else if (value instanceof DeleteRequest) {
-            ScriptableDeleteRequest result = new ScriptableDeleteRequest(parameter, (DeleteRequest) value);
-            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
-            return result;
-        }
-        else if (value instanceof PatchRequest) {
-            ScriptablePatchRequest result = new ScriptablePatchRequest(parameter, (PatchRequest) value);
-            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
-            return result;
-        }
-        else if (value instanceof QueryRequest) {
-            ScriptableQueryRequest result = new ScriptableQueryRequest(parameter, (QueryRequest) value);
-            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
-            return result;
-        }
-        else if (value instanceof ReadRequest) {
-            ScriptableReadRequest result = new ScriptableReadRequest(parameter, (ReadRequest) value);
-            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
-            return result;
-        }
-        else if (value instanceof UpdateRequest) {
-            ScriptableUpdateRequest result = new ScriptableUpdateRequest(parameter, (UpdateRequest) value);
-            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
-            return result;
-        }
-        else if (value instanceof ActionRequest) {
-            ScriptableActionRequest result = new ScriptableActionRequest(parameter, (ActionRequest) value);
-            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
-            return result;
-        } else {
-            // we shouldn't get here...
-            return Context.javaToJS(value, scope);
-        }
-    }
-
-    public static final Object wrap(final Parameter parameter, final org.forgerock.json.resource.Context value, final Scriptable scope) {
+    public static final Object wrap(final Parameter parameter, final org.forgerock.http.Context value, final Scriptable scope) {
         ScriptableContext result = new ScriptableContext(parameter, value);
         ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
         return result;
@@ -269,7 +226,7 @@ class Converter {
         } else if (value instanceof Number || value instanceof String || value instanceof Boolean
                 || value instanceof Map || value instanceof List) {
             result = value; // already valid JSON element
-        } else if (value instanceof Request || value instanceof org.forgerock.json.resource.Context) {
+        } else if (value instanceof Request || value instanceof org.forgerock.http.Context) {
             return value;
         } else if (value instanceof CharSequence) {
             result = value.toString();

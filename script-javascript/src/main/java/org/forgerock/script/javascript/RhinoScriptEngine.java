@@ -24,7 +24,6 @@
 
 package org.forgerock.script.javascript;
 
-import org.forgerock.json.resource.PersistenceConfig;
 import org.forgerock.json.resource.ResourceException;
 import org.forgerock.script.engine.AbstractScriptEngine;
 import org.forgerock.script.engine.CompilationHandler;
@@ -58,7 +57,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A NAME does ...
@@ -73,8 +71,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
     private static final Logger logger = LoggerFactory.getLogger(RhinoScriptEngine.class);
 
     private ScriptEngineFactory factory;
-
-    private AtomicReference<PersistenceConfig> persistenceConfigReference;
 
     private final ConcurrentMap<String, ScriptCacheEntry> scriptCache =
             new ConcurrentHashMap<String, ScriptCacheEntry>();
@@ -257,13 +253,8 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         return factory;
     }
 
-    public OperationParameter getOperationParameter(
-            final org.forgerock.json.resource.Context context) {
-        final PersistenceConfig persistenceConfig = persistenceConfigReference.get();
-        if (null == persistenceConfig) {
-            throw new NullPointerException();
-        }
-        return new OperationParameter(context, "DEFAULT", persistenceConfig);
+    public OperationParameter getOperationParameter(final org.forgerock.http.Context context) {
+        return new OperationParameter(context);
     }
 
     private ContextFactory.Listener debugListener = null;
@@ -321,13 +312,8 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         }
     }
 
-    public void setPersistenceConfig(final AtomicReference<PersistenceConfig> persistenceConfig) {
-        this.persistenceConfigReference = persistenceConfig;
-    }
-
     @Override
-    public Bindings compileBindings(org.forgerock.json.resource.Context context, Bindings request,
-            Bindings... value) {
+    public Bindings compileBindings(org.forgerock.http.Context context, Bindings request, Bindings... value) {
         return null;
     }
 

@@ -29,7 +29,6 @@
 
 package org.forgerock.script.javascript;
 
-import org.forgerock.json.resource.PersistenceConfig;
 import org.forgerock.script.engine.ScriptEngine;
 import org.forgerock.script.engine.ScriptEngineFactory;
 import org.forgerock.script.source.SourceContainer;
@@ -39,7 +38,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A NAME does ...
@@ -109,7 +107,6 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
     }
 
     public ScriptEngine getScriptEngine(
-            final AtomicReference<PersistenceConfig> persistenceConfigReference,
             final Map<String, Object> configuration,
             final Collection<SourceContainer> sourceContainers,
             final ClassLoader registryLevelClassLoader) {
@@ -117,7 +114,6 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
             synchronized (this) {
                 if (null == engine) {
                     engine = new RhinoScriptEngine(configuration, this, sourceContainers, registryLevelClassLoader);
-                    engine.setPersistenceConfig(persistenceConfigReference);
                 }
             }
         }

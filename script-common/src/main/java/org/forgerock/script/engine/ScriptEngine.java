@@ -24,7 +24,7 @@
 
 package org.forgerock.script.engine;
 
-import org.forgerock.json.resource.Context;
+import org.forgerock.http.Context;
 
 import javax.script.Bindings;
 import javax.script.ScriptException;
@@ -36,7 +36,7 @@ import javax.script.ScriptException;
  */
 public interface ScriptEngine {
 
-    public void compileScript(CompilationHandler handler) throws ScriptException;
+    void compileScript(CompilationHandler handler) throws ScriptException;
 
     /**
      * Returns a <code>ScriptEngineFactory</code> for the class to which this
@@ -44,7 +44,7 @@ public interface ScriptEngine {
      *
      * @return The <code>ScriptEngineFactory</code>
      */
-    public ScriptEngineFactory getFactory();
+    ScriptEngineFactory getFactory();
 
     /**
      * Visits a function instance.
@@ -57,7 +57,7 @@ public interface ScriptEngine {
      *            The Bindings instance.
      * @return Returns a visitor specified result.
      */
-    public Bindings compileBindings(Context context, Bindings request, Bindings... value);
+    Bindings compileBindings(Context context, Bindings request, Bindings... value);
 
     /**
      * Visits a function instance.
@@ -68,6 +68,6 @@ public interface ScriptEngine {
      *            The ScriptContext instance.
      * @return Returns a visitor specified result.
      */
-    public Object compileObject(Context context, Object value);
+    Object compileObject(Context context, Object value);
 
 }

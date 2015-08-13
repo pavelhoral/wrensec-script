@@ -55,7 +55,7 @@ import groovy.util.ResourceException;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.MetaClassHelper;
 import org.codehaus.groovy.runtime.MethodClosure;
-import org.forgerock.json.resource.Context;
+import org.forgerock.http.Context;
 import org.forgerock.script.engine.CompiledScript;
 import org.forgerock.script.exception.ScriptCompilationException;
 import org.forgerock.script.exception.ScriptThrownException;
@@ -269,9 +269,7 @@ public class GroovyScript implements CompiledScript {
         }
         // Make lazy deep copy
         if (!scope.isEmpty()) {
-            scope =
-                    new LazyMap<String, Object>(new InnerMapFactory(scope, new OperationParameter(
-                            context, "DEFAULT", engine.getPersistenceConfig())));
+            scope = new LazyMap<String, Object>(new InnerMapFactory(scope, new OperationParameter(context)));
         }
 
         if (null == request || request.isEmpty()) {

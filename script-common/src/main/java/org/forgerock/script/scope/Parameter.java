@@ -24,42 +24,24 @@
 
 package org.forgerock.script.scope;
 
-import org.forgerock.json.fluent.JsonValue;
-import org.forgerock.json.resource.Connection;
-import org.forgerock.json.resource.PersistenceConfig;
+import org.forgerock.http.Context;
 import org.forgerock.json.resource.ResourceException;
-import org.forgerock.json.resource.ServerContext;
 
 /**
- * A Parameter does ...
- * 
- * @author Laszlo Hordos
+ * A Parameter holds the Context associated with the request that invoked a script.
  */
 public interface Parameter {
 
     /**
-     * Returns the ServerRequest assigned with the current {@link org.forgerock.json.resource.Request}
+     * Returns the Context assigned with the current {@link org.forgerock.json.resource.Request}
      * from the saved context data.
      *
-     * @return The ServerContext assigned with current
-     *         {@link org.forgerock.json.resource.Request}.
+     * @return The Context assigned with current {@link org.forgerock.json.resource.Request}.
      * @throws org.forgerock.json.resource.NotFoundException
      *             If no such connection exists.
      * @throws org.forgerock.json.resource.ResourceException
      *             If the connection could not be obtained for some other reason
      *             (e.g. due to a configuration or initialization problem).
      */
-    ServerContext getServerContext(JsonValue savedContext) throws ResourceException;
-
-    /**
-     * Returns the persistence config helper.
-     *
-     * @return the PersistenceConfig
-     * @throws org.forgerock.json.resource.NotFoundException
-     *             If no such connection exists.
-     * @throws org.forgerock.json.resource.ResourceException
-     *             If the connection could not be obtained for some other reason
-     *             (e.g. due to a configuration or initialization problem).
-     */
-    PersistenceConfig getPersistenceConfig();
+    Context getContext(Context savedContext) throws ResourceException;
 }

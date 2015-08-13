@@ -9,13 +9,11 @@
 
 package org.forgerock.script.engine;
 
-import org.forgerock.json.resource.PersistenceConfig;
 import org.forgerock.script.source.SourceContainer;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * {@code ScriptEngineFactory} is used to describe and instantiate
@@ -97,14 +95,12 @@ public interface ScriptEngineFactory {
      * {@code ScriptEngineFactory}. A new ScriptEngine is generally returned,
      * but implementations may pool, share or reuse engines.
      *
-     * @param connectionFactory a reference to the ConnectionFactory provider
      * @param configuration script engine configuration
      * @param sourceContainers a collection of SourceContainers used to locate scripts
      * @param registryLevelClassLoader the ScriptRegistry's class loader
      * @return A new {@code ScriptEngine} instance.
      */
-    public ScriptEngine getScriptEngine(AtomicReference<PersistenceConfig> connectionFactory,
-            Map<String, Object> configuration, Collection<SourceContainer> sourceContainers,
+    public ScriptEngine getScriptEngine(Map<String, Object> configuration, Collection<SourceContainer> sourceContainers,
             ClassLoader registryLevelClassLoader);
 
 }

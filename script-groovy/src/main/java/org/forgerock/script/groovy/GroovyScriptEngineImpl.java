@@ -36,8 +36,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.forgerock.json.resource.Context;
-import org.forgerock.json.resource.PersistenceConfig;
+import org.forgerock.http.Context;
 import org.forgerock.script.engine.AbstractScriptEngine;
 import org.forgerock.script.engine.CompilationHandler;
 import org.forgerock.script.engine.ScriptEngineFactory;
@@ -55,7 +54,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A NAME does ...
@@ -73,8 +71,6 @@ public class GroovyScriptEngineImpl extends AbstractScriptEngine {
 
     private final GroovyScriptEngine groovyScriptEngine;
 
-    private final AtomicReference<PersistenceConfig> persistenceConfigReference;
-
     private final GroovyClassLoader loader;
 
     private final ConcurrentMap<String, Class> scriptCache = new ConcurrentHashMap<String, Class>();
@@ -83,10 +79,8 @@ public class GroovyScriptEngineImpl extends AbstractScriptEngine {
     private static final String DOT_STAR = ".*";
     private static final String EMPTY_STRING = "";
 
-    GroovyScriptEngineImpl(Map<String, Object> configuration, final ScriptEngineFactory factory,
-            final AtomicReference<PersistenceConfig> persistenceConfig) {
+    GroovyScriptEngineImpl(Map<String, Object> configuration, final ScriptEngineFactory factory) {
         this.factory = factory;
-        this.persistenceConfigReference = persistenceConfig;
 
         /*
          * groovy -cp slf4j-api.jar -configscript config.groovy myscript.groovy
@@ -243,7 +237,4 @@ public class GroovyScriptEngineImpl extends AbstractScriptEngine {
         return null;
     }
 
-    public PersistenceConfig getPersistenceConfig() {
-        return persistenceConfigReference.get();
-    }
 }

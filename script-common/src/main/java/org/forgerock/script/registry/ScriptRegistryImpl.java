@@ -24,9 +24,8 @@
 
 package org.forgerock.script.registry;
 
-import org.forgerock.json.fluent.JsonValue;
-import org.forgerock.json.resource.Context;
-import org.forgerock.json.resource.PersistenceConfig;
+import org.forgerock.http.Context;
+import org.forgerock.json.JsonValue;
 import org.forgerock.script.Scope;
 import org.forgerock.script.Script;
 import org.forgerock.script.ScriptContext;
@@ -98,9 +97,6 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
 
     private final ReadWriteLock sourceCacheLock = new ReentrantReadWriteLock();
 
-    private final AtomicReference<PersistenceConfig> persistenceConfigReference =
-            new AtomicReference<PersistenceConfig>();
-
     private Map<String, Object> properties;
     
     private ClassLoader registryLevelScriptClassLoader;
@@ -149,10 +145,6 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
                 engines.put(entry.getKey(), initializeScriptEngine(entry.getKey()));
             }
         }
-    }
-
-    public void setPersistenceConfig(PersistenceConfig persistenceConfig) {
-        persistenceConfigReference.set(persistenceConfig);
     }
 
     @Override
@@ -308,7 +300,7 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
         configuration.put(Bindings.class.getName(), globalScope);
         sourceCacheLock.readLock().lock();
         try {
-            return factory.getScriptEngine(persistenceConfigReference, configuration, sourceCache.values(),
+            return factory.getScriptEngine(configuration, sourceCache.values(),
                     getRegistryLevelScriptClassLoader());
         } finally {
             sourceCacheLock.readLock().unlock();

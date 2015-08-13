@@ -24,7 +24,7 @@
 
 package org.forgerock.script.javascript;
 
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.PatchOperation;
 import org.forgerock.json.resource.PatchRequest;
 import org.forgerock.script.scope.Parameter;
