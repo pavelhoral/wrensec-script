@@ -24,16 +24,23 @@
 
 package org.forgerock.script.javascript;
 
-import org.forgerock.json.fluent.JsonValue;
+import static org.forgerock.json.JsonValue.field;
+import static org.forgerock.json.JsonValue.json;
+import static org.forgerock.json.JsonValue.object;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.forgerock.http.Context;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ClientContext;
-import org.forgerock.json.resource.Context;
-import org.forgerock.json.resource.servlet.HttpContext;
+import org.forgerock.json.resource.http.HttpContext;
 import org.forgerock.script.scope.Parameter;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 import org.mozilla.javascript.annotations.JSFunction;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -51,17 +58,20 @@ class ScriptableContext extends NativeObject implements Wrapper {
     private static final String CALLER = "caller";
     private static final String CURRENT = "current";
     private static final String PARENT = "parent";
+    private static final String HTTP_CONTEXT_NAME = "http";
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     final transient Parameter parameter;
 
     /** map of contexts exposed by this wrapper by context name */
-    private Map<String,Context> contexts;
+    private final Map<String, Context> contexts;
 
     /** information about the calling client */
-    private JsonValue caller;
+    private final JsonValue caller;
 
     /** set of keys that this context wrapper "responds to */
-    private Set<String> ids;
+    private final Set<String> ids;
 
     /**
      * Constructs a new scriptable wrapper around the specified context.
@@ -93,9 +103,11 @@ class ScriptableContext extends NativeObject implements Wrapper {
             ids.add(CALLER);
 
             final ClientContext client = context.asContext(ClientContext.class);
-            caller = new JsonValue(new HashMap<String,Object>());
-            caller.put("name", client.getContextName());
-            caller.put("external", client.isExternal());
+            caller = json(object(
+                    field("name", client.getContextName()),
+                    field("external", client.isExternal())));
+        } else {
+            caller = new JsonValue(null);
         }
     }
 
@@ -134,11 +146,12 @@ class ScriptableContext extends NativeObject implements Wrapper {
         if (CALLER.equals(name)) {
             return Converter.wrap(parameter, caller, start, false);
         } else if (contexts.containsKey(name)) {
-            if (HttpContext.CONTEXT_NAME.equals(name)) {
+            if (HTTP_CONTEXT_NAME.equals(name)) {
                 final JsonValue value = contexts.get(name).toJsonValue();
+                // TODO replace with CHF-27 script-friendly Context representation
                 // Join all header/parameter values for the same header/parameter into comma-separated-value String
-                value.put(HttpContext.ATTR_HEADERS, listValuesAsStrings(value.get(HttpContext.ATTR_HEADERS)));
-                value.put(HttpContext.ATTR_PARAMETERS, listValuesAsStrings(value.get(HttpContext.ATTR_PARAMETERS)));
+                value.put(/*HttpContext.ATTR_HEADERS*/"headers", listValuesAsStrings(value.get(/*HttpContext.ATTR_HEADERS*/"headers")));
+                value.put(/*HttpContext.ATTR_PARAMETERS*/"parameters", listValuesAsStrings(value.get(/*HttpContext.ATTR_PARAMETERS*/"parameters")));
                 return Converter.wrap(parameter, value, start, false);
             } else {
                 return Converter.wrap(parameter, contexts.get(name).toJsonValue(), start, false);
@@ -214,4 +227,14 @@ class ScriptableContext extends NativeObject implements Wrapper {
         }
         return allContexts.toString();
     }
+
+    @Override
+    public Object getDefaultValue(Class<?> hint) {
+        if (hint == null || hint == String.class) {
+            return toString();
+        } else {
+            return super.getDefaultValue(hint);
+        }
+    }
+
 }

@@ -24,31 +24,28 @@
 
 package org.forgerock.script;
 
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.http.Context;
+import org.forgerock.http.context.RootContext;
+import org.forgerock.http.routing.RoutingMode;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ActionRequest;
-import org.forgerock.json.resource.Connection;
 import org.forgerock.json.resource.ConnectionFactory;
-import org.forgerock.json.resource.ConnectionProvider;
-import org.forgerock.json.resource.Context;
 import org.forgerock.json.resource.CreateRequest;
 import org.forgerock.json.resource.DeleteRequest;
 import org.forgerock.json.resource.MemoryBackend;
 import org.forgerock.json.resource.PatchOperation;
 import org.forgerock.json.resource.PatchRequest;
-import org.forgerock.json.resource.PersistenceConfig;
 import org.forgerock.json.resource.QueryRequest;
 import org.forgerock.json.resource.ReadRequest;
 import org.forgerock.json.resource.RequestHandler;
 import org.forgerock.json.resource.Requests;
-import org.forgerock.json.resource.Resource;
+import org.forgerock.json.resource.ResourceResponse;
 import org.forgerock.json.resource.ResourceException;
 import org.forgerock.json.resource.Resources;
-import org.forgerock.json.resource.ResultHandler;
-import org.forgerock.json.resource.RootContext;
+import org.forgerock.json.resource.Responses;
 import org.forgerock.json.resource.Router;
-import org.forgerock.json.resource.RoutingMode;
+import org.forgerock.json.resource.SingletonResourceProvider;
 import org.forgerock.json.resource.SecurityContext;
-import org.forgerock.json.resource.ServerContext;
 import org.forgerock.json.resource.UpdateRequest;
 import org.forgerock.script.engine.ScriptEngineFactory;
 import org.forgerock.script.exception.ScriptCompilationException;
@@ -60,6 +57,8 @@ import org.forgerock.script.source.DirectoryContainer;
 import org.forgerock.script.source.EmbeddedScriptSource;
 import org.forgerock.script.source.ScriptSource;
 import org.forgerock.script.source.SourceContainer;
+import org.forgerock.util.promise.Promise;
+import org.forgerock.util.promise.Promises;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
@@ -78,6 +77,9 @@ import java.util.ServiceLoader;
 import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.forgerock.json.JsonValue.json;
+import static org.forgerock.json.JsonValue.object;
+import static org.forgerock.json.resource.Router.uriTemplate;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -109,39 +111,22 @@ public abstract class ScriptTest {
                         ServiceLoader.load(ScriptEngineFactory.class), null, null);
 
         RequestHandler resource = mock(RequestHandler.class);
+        SingletonResourceProvider singletonProvider = mock(SingletonResourceProvider.class);
 
         final Router router = new Router();
-        router.addRoute("/Users", new MemoryBackend());
-        router.addRoute("/Groups", new MemoryBackend());
-        router.addRoute(RoutingMode.EQUALS, "mock/{id}", resource);
+        router.addRoute(uriTemplate("/Users"), new MemoryBackend());
+        router.addRoute(uriTemplate("/Groups"), new MemoryBackend());
+        router.addRoute(uriTemplate("mock/{id}"), singletonProvider);
 
         connectionFactory = Resources.newInternalConnectionFactory(router);
 
-        scriptRegistry.setPersistenceConfig(PersistenceConfig.builder().connectionProvider(
-                // no longer used, but still required by PersistenceConfig
-                new ConnectionProvider() {
-                    @Override
-                    public Connection getConnection(String connectionId) throws ResourceException {
-                            return connectionFactory.getConnection();
-                    }
-
-                    @Override
-                    public String getConnectionId(Connection connection) throws ResourceException {
-                        return "DEFAULT";
-                    }
-                }).build());
-
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+        doAnswer(new Answer<Promise<ResourceResponse,ResourceException>>() {
+            public Promise<ResourceResponse,ResourceException> answer(InvocationOnMock invocation) throws Throwable {
                 ReadRequest request = (ReadRequest) invocation.getArguments()[1];
-                ResultHandler<Resource> handler =
-                        (ResultHandler<Resource>) invocation.getArguments()[2];
-                handler.handleResult(new Resource(request.getResourceName(), "1", new JsonValue(
-                        new HashMap<String, Object>())));
-                return null;
+                return Promises.newResultPromise(
+                        Responses.newResourceResponse(request.getResourcePath(), "1", json(object())));
             }
-        }).when(resource).handleRead(any(ServerContext.class), any(ReadRequest.class),
-                any(ResultHandler.class));
+        }).when(resource).handleRead(any(Context.class), any(ReadRequest.class));
 
         scriptRegistry.put("router", FunctionFactory.getResource(connectionFactory));
 

@@ -24,45 +24,28 @@
 
 package org.forgerock.script;
 
-import org.forgerock.json.fluent.JsonValue;
-import org.forgerock.json.resource.AbstractContext;
+import org.forgerock.http.context.AbstractContext;
+import org.forgerock.http.Context;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ClientContext;
-import org.forgerock.json.resource.Context;
-import org.forgerock.json.resource.PersistenceConfig;
-import org.forgerock.json.resource.ResourceException;
 
 /**
- * A NAME does ...
- * 
- * @author Laszlo Hordos
+ * A client context to wrap the calling context when entering a script.
  */
 public class ScriptContext extends AbstractContext implements ClientContext {
-
-    /** the friendly name for this context */
-    private static final String CONTEXT_NAME = "script";
-
-    public static final String ATTR_TYPE = "type";
-    public static final String ATTR_NAME = "name";
-    public static final String ATTR_REVISION = "revision";
+    private static final String ATTR_SCRIPT_NAME = "scriptName";
+    private static final String ATTR_SCRIPT_TYPE = "scriptType";
+    private static final String ATTR_SCRIPT_REVISION = "scriptRevision";
 
     public ScriptContext(Context parent, String name, String type, String revision) {
-        super(parent);
-        data.put(ATTR_NAME, name);
-        data.put(ATTR_TYPE, type);
-        data.put(ATTR_REVISION, revision);
+        super(parent, "script");
+        data.put(ATTR_SCRIPT_NAME, name);
+        data.put(ATTR_SCRIPT_TYPE, type);
+        data.put(ATTR_SCRIPT_REVISION, revision);
     }
 
-    public ScriptContext(JsonValue savedContext, PersistenceConfig config) throws ResourceException {
-        super(savedContext, config);
-    }
-
-    /**
-     * Get this Context's name.
-     *
-     * @return this object's name
-     */
-    public String getContextName() {
-        return CONTEXT_NAME;
+    public ScriptContext(JsonValue savedContext, ClassLoader classLoader) {
+        super(savedContext, classLoader);
     }
 
     /**
@@ -70,5 +53,17 @@ public class ScriptContext extends AbstractContext implements ClientContext {
      */
     public boolean isExternal() {
         return false;
+    }
+
+    public String getName() {
+        return data.get(ATTR_SCRIPT_NAME).asString();
+    }
+
+    public String getType() {
+        return data.get(ATTR_SCRIPT_TYPE).asString();
+    }
+
+    public String getRevision() {
+        return data.get(ATTR_SCRIPT_REVISION).asString();
     }
 }

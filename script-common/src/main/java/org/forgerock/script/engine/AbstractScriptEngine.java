@@ -24,7 +24,7 @@
 
 package org.forgerock.script.engine;
 
-import org.forgerock.json.resource.Context;
+import org.forgerock.http.Context;
 import org.forgerock.json.resource.Requests;
 import org.forgerock.json.resource.Resources;
 
@@ -45,8 +45,10 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
     private static final List<String> IMPORTS = new ArrayList<String>();
 
     static {
+        IMPORTS.add("org.forgerock.http.*");
+        IMPORTS.add("org.forgerock.http.context.*");
         IMPORTS.add("org.forgerock.json.resource.*");
-        IMPORTS.add("org.forgerock.json.fluent.*");
+        IMPORTS.add("org.forgerock.json.*");
         IMPORTS.add("static " + Resources.class.getName() + ".*");
         IMPORTS.add("static " + Requests.class.getName() + ".*");
     }

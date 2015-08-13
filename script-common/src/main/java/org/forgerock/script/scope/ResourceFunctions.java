@@ -24,9 +24,6 @@
 
 package org.forgerock.script.scope;
 
-import static org.forgerock.json.fluent.JsonValue.json;
-import static org.forgerock.json.fluent.JsonValue.object;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -34,28 +31,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.http.Context;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ActionRequest;
+import org.forgerock.json.resource.ActionResponse;
 import org.forgerock.json.resource.BadRequestException;
 import org.forgerock.json.resource.ConnectionFactory;
 import org.forgerock.json.resource.CreateRequest;
 import org.forgerock.json.resource.DeleteRequest;
-import org.forgerock.json.resource.FutureResult;
 import org.forgerock.json.resource.NotFoundException;
 import org.forgerock.json.resource.PatchOperation;
 import org.forgerock.json.resource.PatchRequest;
-import org.forgerock.json.resource.QueryFilter;
+import org.forgerock.json.resource.QueryFilters;
 import org.forgerock.json.resource.QueryRequest;
-import org.forgerock.json.resource.QueryResult;
-import org.forgerock.json.resource.QueryResultHandler;
+import org.forgerock.json.resource.QueryResourceHandler;
+import org.forgerock.json.resource.QueryResponse;
 import org.forgerock.json.resource.ReadRequest;
 import org.forgerock.json.resource.Request;
 import org.forgerock.json.resource.Requests;
-import org.forgerock.json.resource.Resource;
+import org.forgerock.json.resource.ResourceResponse;
 import org.forgerock.json.resource.ResourceException;
-import org.forgerock.json.resource.ResultHandler;
-import org.forgerock.json.resource.ServerContext;
-import org.forgerock.json.resource.ServiceUnavailableException;
 import org.forgerock.json.resource.UpdateRequest;
 
 /**
@@ -94,7 +89,7 @@ public final class ResourceFunctions {
             JsonValue content = null;
             JsonValue params = new JsonValue(null);
             List<Object> fieldFilter = null;
-            JsonValue context = null;
+            Context context = null;
 
             if (arguments.length < 3) {
                 throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage("create",
@@ -152,10 +147,8 @@ public final class ResourceFunctions {
                                 "create", arguments));
                     }
                 case 5:
-                    if (value instanceof Map) {
-                        context = new JsonValue(value);
-                    } else if (value instanceof JsonValue && ((JsonValue) value).isMap()) {
-                        context = (JsonValue) value;
+                    if (value instanceof Context) {
+                        context = (Context) value;
                     } else if (null != value) {
                         throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage(
                                 "create", arguments));
@@ -169,9 +162,9 @@ public final class ResourceFunctions {
                     callback).getContent();
         }
 
-        public Resource create(final Parameter scope, String resourceContainer,
+        public ResourceResponse create(final Parameter scope, String resourceContainer,
                 String newResourceId, JsonValue content, JsonValue params, List<Object> fieldFilter,
-                JsonValue context, final Function<?> callback) throws ResourceException {
+                Context context, final Function<?> callback) throws ResourceException {
             CreateRequest cr =
                     Requests.newCreateRequest(resourceContainer, newResourceId, new JsonValue(
                             content));
@@ -181,18 +174,7 @@ public final class ResourceFunctions {
                 setAdditionalParameter(cr, name, params.get(name));
             }
 
-            final ServerContext serverContext = scope.getServerContext(context);
-            final FutureResult<Resource> future =
-                    connectionFactory.getConnection().createAsync(serverContext, cr,
-                            this.<Resource> getResultHandler(scope, callback));
-            try {
-                return future.get();
-            } catch (final InterruptedException e) {
-                throw interrupted(e);
-            } finally {
-                // Cancel the request if it hasn't completed.
-                future.cancel(false);
-            }
+            return connectionFactory.getConnection().create(scope.getContext(context), cr);
         }
 
     }
@@ -221,7 +203,7 @@ public final class ResourceFunctions {
             String resourceName = null;
             List<Object> fieldFilter = null;
             JsonValue params = new JsonValue(null);
-            JsonValue context = null;
+            Context context = null;
             if (arguments.length < 1) {
                 throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage("read",
                         arguments));
@@ -260,10 +242,8 @@ public final class ResourceFunctions {
                                 "read", arguments));
                     }
                 case 3:
-                    if (value instanceof Map) {
-                        context = new JsonValue(value);
-                    } else if (value instanceof JsonValue && ((JsonValue) value).isMap()) {
-                        context = (JsonValue) value;
+                    if (value instanceof Context) {
+                        context = (Context) value;
                     } else if (null != value) {
                         throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage(
                                 "read", arguments));
@@ -283,8 +263,8 @@ public final class ResourceFunctions {
             return result;
         }
 
-        public Resource read(final Parameter scope, String resourceName, JsonValue params,
-                List<Object> fieldFilter, JsonValue context, final Function<?> callback)
+        public ResourceResponse read(final Parameter scope, String resourceName, JsonValue params,
+                List<Object> fieldFilter, Context context, final Function<?> callback)
                 throws ResourceException {
 
             ReadRequest rr = Requests.newReadRequest(resourceName);
@@ -294,18 +274,7 @@ public final class ResourceFunctions {
                 setAdditionalParameter(rr, name, params.get(name));
             }
 
-            final ServerContext serverContext = scope.getServerContext(context);
-            final FutureResult<Resource> future =
-                    connectionFactory.getConnection().readAsync(serverContext, rr,
-                            this.<Resource> getResultHandler(scope, callback));
-            try {
-                return future.get();
-            } catch (final InterruptedException e) {
-                throw interrupted(e);
-            } finally {
-                // Cancel the request if it hasn't completed.
-                future.cancel(false);
-            }
+            return connectionFactory.getConnection().read(scope.getContext(context), rr);
         }
     }
 
@@ -336,7 +305,7 @@ public final class ResourceFunctions {
             JsonValue content = null;
             JsonValue params = new JsonValue(null);
             List<Object> fieldFilter = null;
-            JsonValue context = null;
+            Context context = null;
 
             if (arguments.length < 3) {
                 throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage("update",
@@ -394,10 +363,8 @@ public final class ResourceFunctions {
                                 "update", arguments));
                     }
                 case 5:
-                    if (value instanceof Map) {
-                        context = new JsonValue(value);
-                    } else if (value instanceof JsonValue && ((JsonValue) value).isMap()) {
-                        context = (JsonValue) value;
+                    if (value instanceof Context) {
+                        context = (Context) value;
                     } else if (null != value) {
                         throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage(
                                 "update", arguments));
@@ -411,8 +378,8 @@ public final class ResourceFunctions {
                     .getContent();
         }
 
-        private final Resource update(final Parameter scope, String resourceName, String revision,
-                JsonValue content, JsonValue params, List<Object> fieldFilter, JsonValue context,
+        private final ResourceResponse update(final Parameter scope, String resourceName, String revision,
+                JsonValue content, JsonValue params, List<Object> fieldFilter, Context context,
                 final Function<?> callback) throws ResourceException {
 
             UpdateRequest ur = Requests.newUpdateRequest(resourceName, content);
@@ -425,18 +392,7 @@ public final class ResourceFunctions {
                 setAdditionalParameter(ur, name, params.get(name));
             }
 
-            final ServerContext serverContext = scope.getServerContext(context);
-            final FutureResult<Resource> future =
-                    connectionFactory.getConnection().updateAsync(serverContext, ur,
-                            this.<Resource> getResultHandler(scope, callback));
-            try {
-                return future.get();
-            } catch (final InterruptedException e) {
-                throw interrupted(e);
-            } finally {
-                // Cancel the request if it hasn't completed.
-                future.cancel(false);
-            }
+            return connectionFactory.getConnection().update(scope.getContext(context), ur);
         }
     }
 
@@ -466,7 +422,7 @@ public final class ResourceFunctions {
             JsonValue patch = null;
             JsonValue params = new JsonValue(null);
             List<Object> fieldFilter = null;
-            JsonValue context = null;
+            Context context = null;
 
             if (arguments.length < 3) {
                 throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage("patch",
@@ -524,10 +480,8 @@ public final class ResourceFunctions {
                                 "patch", arguments));
                     }
                 case 5:
-                    if (value instanceof Map) {
-                        context = new JsonValue(value);
-                    } else if (value instanceof JsonValue && ((JsonValue) value).isMap()) {
-                        context = (JsonValue) value;
+                    if (value instanceof Context) {
+                        context = (Context) value;
                     } else if (null != value) {
                         throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage(
                                 "patch", arguments));
@@ -540,8 +494,8 @@ public final class ResourceFunctions {
             return patch(scope, resourceName, revision, patch, params, fieldFilter, context, callback).getContent();
         }
 
-        private final Resource patch(Parameter scope, String resourceName, String revision,
-                JsonValue patch, JsonValue params, List<Object> fieldFilter, JsonValue context,
+        private final ResourceResponse patch(Parameter scope, String resourceName, String revision,
+                JsonValue patch, JsonValue params, List<Object> fieldFilter, Context context,
                 final Function<?> callback) throws ResourceException {
             // create the request
             PatchRequest pr = Requests.newPatchRequest(resourceName);
@@ -557,18 +511,7 @@ public final class ResourceFunctions {
                 setAdditionalParameter(pr, name, params.get(name));
             }
 
-            final ServerContext serverContext = scope.getServerContext(context);
-            final FutureResult<Resource> future =
-                    connectionFactory.getConnection().patchAsync(serverContext, pr,
-                            this.<Resource> getResultHandler(scope, callback));
-            try {
-                return future.get();
-            } catch (final InterruptedException e) {
-                throw interrupted(e);
-            } finally {
-                // Cancel the request if it hasn't completed.
-                future.cancel(false);
-            }
+            return connectionFactory.getConnection().patch(scope.getContext(context), pr);
         }
     }
 
@@ -597,7 +540,7 @@ public final class ResourceFunctions {
             String resourceContainer = null;
             JsonValue params = new JsonValue(null);
             List<Object> fieldFilter = null;
-            JsonValue context = null;
+            Context context = null;
 
             if (arguments.length < 2) {
                 throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage("query",
@@ -637,10 +580,8 @@ public final class ResourceFunctions {
                                 "query", arguments));
                     }
                 case 3:
-                    if (value instanceof Map) {
-                        context = new JsonValue(value);
-                    } else if (value instanceof JsonValue && ((JsonValue) value).isMap()) {
-                        context = (JsonValue) value;
+                    if (value instanceof Context) {
+                        context = (Context) value;
                     } else if (null != value) {
                         throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage(
                                 "query", arguments));
@@ -655,13 +596,13 @@ public final class ResourceFunctions {
             LinkedList<Object> results =
                     null != callback ? null : new LinkedList<Object>();
 
-            QueryResult queryResult =
+            QueryResponse queryResponse =
                     query(scope, resourceContainer, params, fieldFilter, context, results, callback);
 
             JsonValue result = new JsonValue(new LinkedHashMap<String, Object>(3));
-            if (null != queryResult) {
-                result.put("pagedResultsCookie", queryResult.getPagedResultsCookie());
-                result.put("remainingPagedResults", queryResult.getRemainingPagedResults());
+            if (null != queryResponse) {
+                result.put("pagedResultsCookie", queryResponse.getPagedResultsCookie());
+                result.put("totalPagedResults", queryResponse.getTotalPagedResults());
             }
             if (null != results) {
                 result.put("result", results);
@@ -669,8 +610,8 @@ public final class ResourceFunctions {
             return result;
         }
 
-        private final QueryResult query(final Parameter scope, String resourceContainer,
-                JsonValue params, List<Object> fieldFilter, JsonValue context,
+        private final QueryResponse query(final Parameter scope, String resourceContainer,
+                JsonValue params, List<Object> fieldFilter, Context context,
                 final Collection<Object> results, final Function<?> callback)
                 throws ResourceException {
             if (params.isDefined("_queryId") ^ params.isDefined("_queryExpression")
@@ -726,7 +667,7 @@ public final class ResourceFunctions {
                     } else if (name.equalsIgnoreCase("_queryFilter")) {
                         final String s = params.get(name).required().asString();
                         try {
-                            qr.setQueryFilter(QueryFilter.valueOf(s));
+                            qr.setQueryFilter(QueryFilters.parse(s));
                         } catch (final IllegalArgumentException e) {
                             // FIXME: i18n.
                             throw new BadRequestException("The value '" + s + "' for parameter '"
@@ -738,69 +679,26 @@ public final class ResourceFunctions {
                     }
                 }
 
-                final ServerContext serverContext = scope.getServerContext(context);
-                final FutureResult<QueryResult> future =
-                        connectionFactory.getConnection().queryAsync(serverContext, qr,
-                                new QueryResultHandler() {
-                                    @Override
-                                    public void handleError(final ResourceException error) {
-                                        if (null != callback) {
-                                            try {
-                                                callback.call(scope, null, null, error.toJsonValue());
-                                            } catch (ResourceException e) {
-                                                // TODO log
-                                            } catch (NoSuchMethodException e) {
-                                                // TODO log
-                                            }
-                                        }
+                return connectionFactory.getConnection().query(scope.getContext(context), qr,
+                        new QueryResourceHandler() {
+                            @Override
+                            public boolean handleResource(ResourceResponse resource) {
+                                if (null != callback) {
+                                    try {
+                                        callback.call(scope, null, resource.getContent());
+                                    } catch (ResourceException e) {
+                                        // TODO log
+                                        return false;
+                                    } catch (NoSuchMethodException e) {
+                                        // TODO log
+                                        return false;
                                     }
-
-                                    @Override
-                                    public boolean handleResource(final Resource resource) {
-                                        if (null != callback) {
-                                            try {
-                                                callback.call(scope, null, resource.getContent());
-                                            } catch (ResourceException e) {
-                                                // TODO log
-                                                return false;
-                                            } catch (NoSuchMethodException e) {
-                                                // TODO log
-                                                return false;
-                                            }
-                                        } else {
-                                            results.add(resource.getContent().getObject());
-                                        }
-                                        return true;
-                                    }
-
-                                    @Override
-                                    public void handleResult(final QueryResult result) {
-                                        // TODO We don't need this
-                                        if (null != callback) {
-                                            JsonValue queryResult = json(object());
-                                            if (null != result) {
-                                                queryResult.put("pagedResultsCookie", result.getPagedResultsCookie());
-                                                queryResult.put("remainingPagedResults", result.getRemainingPagedResults());
-                                            }
-                                            try {
-                                                callback.call(scope, null, queryResult);
-                                            } catch (ResourceException e) {
-                                                // TODO log
-                                            } catch (NoSuchMethodException e) {
-                                                // TODO log
-                                            }
-                                        }
-                                    }
-                                });
-                try {
-                    return future.get();
-                } catch (final InterruptedException e) {
-                    throw interrupted(e);
-                } finally {
-                    // Cancel the request if it hasn't completed.
-                    future.cancel(false);
-                }
-
+                                } else {
+                                    results.add(resource.getContent().getObject());
+                                }
+                                return true;
+                            }
+                        });
             } else {
                 throw new BadRequestException(
                         "Only one of [_queryId, _queryExpression, _queryFilter] is supported; multiple detected");
@@ -833,7 +731,7 @@ public final class ResourceFunctions {
             String revision = null;
             JsonValue params = new JsonValue(null);
             List<Object> fieldFilter = null;
-            JsonValue context = null;
+            Context context = null;
 
             if (arguments.length < 2) {
                 throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage("delete",
@@ -881,10 +779,8 @@ public final class ResourceFunctions {
                                 "delete", arguments));
                     }
                 case 4:
-                    if (value instanceof Map) {
-                        context = new JsonValue(value);
-                    } else if (value instanceof JsonValue && ((JsonValue) value).isMap()) {
-                        context = (JsonValue) value;
+                    if (value instanceof Context) {
+                        context = (Context) value;
                     } else if (null != value) {
                         throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage(
                                 "delete", arguments));
@@ -897,8 +793,8 @@ public final class ResourceFunctions {
                     .getContent();
         }
 
-        private Resource delete(Parameter scope, String resourceName, String revision, JsonValue params,
-                List<Object> fieldFilter, JsonValue context, final Function<?> callback)
+        private ResourceResponse delete(Parameter scope, String resourceName, String revision, JsonValue params,
+                List<Object> fieldFilter, Context context, final Function<?> callback)
                 throws ResourceException {
 
             DeleteRequest dr = Requests.newDeleteRequest(resourceName);
@@ -911,18 +807,7 @@ public final class ResourceFunctions {
                 setAdditionalParameter(dr, name, params.get(name));
             }
 
-            final ServerContext serverContext = scope.getServerContext(context);
-            final FutureResult<Resource> future =
-                    connectionFactory.getConnection().deleteAsync(serverContext, dr,
-                            this.<Resource> getResultHandler(scope, callback));
-            try {
-                return future.get();
-            } catch (final InterruptedException e) {
-                throw interrupted(e);
-            } finally {
-                // Cancel the request if it hasn't completed.
-                future.cancel(false);
-            }
+            return connectionFactory.getConnection().delete(scope.getContext(context), dr);
         }
     }
 
@@ -953,7 +838,7 @@ public final class ResourceFunctions {
             JsonValue content = null;
             JsonValue params = new JsonValue(null);
             List<Object> fieldFilter = null;
-            JsonValue context = null;
+            Context context = null;
 
             if (arguments.length < 3) {
                 throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage("action",
@@ -1017,10 +902,8 @@ public final class ResourceFunctions {
                                 "action", arguments));
                     }
                 case 5:
-                    if (value instanceof Map) {
-                        context = new JsonValue(value);
-                    } else if (value instanceof JsonValue && ((JsonValue) value).isMap()) {
-                        context = (JsonValue) value;
+                    if (value instanceof Context) {
+                        context = (Context) value;
                     } else if (null != value) {
                         throw new NoSuchMethodException(FunctionFactory.getNoSuchMethodMessage(
                                 "action", arguments));
@@ -1032,11 +915,11 @@ public final class ResourceFunctions {
             }
 
             return action(scope, resourceName, actionId, content, params, fieldFilter, context,
-                    callback);
+                    callback).getJsonContent();
         }
 
-        public JsonValue action(final Parameter scope, String resourceName, String actionId,
-                JsonValue content, JsonValue params, List<Object> fieldFilter, JsonValue context,
+        public ActionResponse action(final Parameter scope, String resourceName, String actionId,
+                JsonValue content, JsonValue params, List<Object> fieldFilter, Context context,
                 final Function<?> callback) throws ResourceException {
 
             ActionRequest ar =
@@ -1051,18 +934,7 @@ public final class ResourceFunctions {
             // set content
             ar.setContent(content);
 
-            final ServerContext serverContext = scope.getServerContext(context);
-            final FutureResult<JsonValue> future =
-                    connectionFactory.getConnection().actionAsync(serverContext, ar,
-                            this.<JsonValue> getResultHandler(scope, callback));
-            try {
-                return future.get();
-            } catch (final InterruptedException e) {
-                throw interrupted(e);
-            } finally {
-                // Cancel the request if it hasn't completed.
-                future.cancel(false);
-            }
+            return connectionFactory.getConnection().action(scope.getContext(context), ar);
         }
     }
 
@@ -1075,42 +947,6 @@ public final class ResourceFunctions {
 
         AbstractFunction(ConnectionFactory connectionFactory) {
             this.connectionFactory = connectionFactory;
-        }
-
-        protected <T> ResultHandler<T> getResultHandler(final Parameter scope,
-                final Function<?> callback) {
-            return null == callback ? null : new ResultHandler<T>() {
-                @Override
-                public void handleError(ResourceException error) {
-                    try {
-                        callback.call(scope, null, null, error.toJsonValue().asMap());
-                    } catch (ResourceException e) {
-                        // TODO log
-                    } catch (NoSuchMethodException e) {
-                        // TODO log
-                    }
-                }
-
-                @Override
-                public void handleResult(T result) {
-                    try {
-                        if (result instanceof JsonValue) {
-                            callback.call(scope, null, ((JsonValue) result).getObject());
-                        } else if (result instanceof Resource) {
-                            callback.call(scope, null, ((Resource) result).getContent().getObject());
-                        }
-                    } catch (ResourceException e) {
-                        // TODO log
-                    } catch (NoSuchMethodException e) {
-                        // TODO log
-                    }
-                }
-            };
-        }
-
-        protected ResourceException interrupted(final InterruptedException e) {
-            // TODO: i18n?
-            return new ServiceUnavailableException("Client thread interrupted", e);
         }
 
         protected String[] fetchFields(List<Object> fields) {

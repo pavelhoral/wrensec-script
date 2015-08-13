@@ -24,29 +24,10 @@
 
 package org.forgerock.script.scope;
 
-import org.forgerock.json.fluent.JsonValue;
-import org.forgerock.json.resource.ActionRequest;
-import org.forgerock.json.resource.Connection;
-import org.forgerock.json.resource.ConnectionFactory;
-import org.forgerock.json.resource.ConnectionProvider;
-import org.forgerock.json.resource.InternalServerErrorException;
-import org.forgerock.json.resource.MemoryBackend;
-import org.forgerock.json.resource.PersistenceConfig;
-import org.forgerock.json.resource.RequestHandler;
-import org.forgerock.json.resource.ResourceException;
-import org.forgerock.json.resource.Resources;
-import org.forgerock.json.resource.ResultHandler;
-import org.forgerock.json.resource.RootContext;
-import org.forgerock.json.resource.Router;
-import org.forgerock.json.resource.ServerContext;
-import org.forgerock.script.engine.ScriptEngine;
-import org.forgerock.script.engine.ScriptEngineFactory;
-import org.forgerock.script.registry.ScriptRegistryImpl;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.testng.Assert;
-import org.testng.ITestContext;
-import org.testng.annotations.Test;
+import static org.forgerock.json.resource.Router.uriTemplate;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngineManager;
@@ -56,41 +37,56 @@ import java.util.HashMap;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
+import org.forgerock.http.context.AbstractContext;
+import org.forgerock.json.resource.ActionResponse;
+import org.forgerock.json.resource.Responses;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import org.forgerock.http.Context;
+import org.forgerock.http.context.RootContext;
+import org.forgerock.json.JsonValue;
+import org.forgerock.json.resource.ActionRequest;
+import org.forgerock.json.resource.ConnectionFactory;
+import org.forgerock.json.resource.MemoryBackend;
+import org.forgerock.json.resource.RequestHandler;
+import org.forgerock.json.resource.ResourceException;
+import org.forgerock.json.resource.Resources;
+import org.forgerock.json.resource.Router;
+import org.forgerock.script.engine.ScriptEngine;
+import org.forgerock.script.engine.ScriptEngineFactory;
+import org.forgerock.script.registry.ScriptRegistryImpl;
+import org.forgerock.util.promise.Promise;
+import org.forgerock.util.promise.Promises;
 
 /**
- * A NAME does ...
- *
- * @author Laszlo Hordos
+ * Test the ResourceFunctions
  */
 public class ResourceFunctionsTest {
 
     private ConnectionFactory getConnectionFactory() {
         // Get the OSGi Router
         final Router router = new Router();
-        router.addRoute("Users", new MemoryBackend());
-        router.addRoute("Groups", new MemoryBackend());
+        router.addRoute(uriTemplate("Users"), new MemoryBackend());
+        router.addRoute(uriTemplate("Groups"), new MemoryBackend());
         return Resources.newInternalConnectionFactory(router);
     }
 
-    protected PersistenceConfig getPersistenceConfig(final ConnectionFactory connectionFactory) {
-        return PersistenceConfig.builder().connectionProvider(new ConnectionProvider() {
-            // no longer used, but still required by PersistenceConfig
-            @Override
-            public Connection getConnection(String connectionId) throws ResourceException {
-                return connectionFactory.getConnection();
-            }
+    final ActionResponse trueResult = Responses.newActionResponse(new JsonValue(true));
 
-            @Override
-            public String getConnectionId(Connection connection) throws ResourceException {
-                return "TEST";
-            }
-        }).build();
-    }
+    final RequestHandler resource = mock(RequestHandler.class);
 
-    // @Test
+    final ConnectionFactory connectionFactory = Resources.newInternalConnectionFactory(resource);
+
+    Context context = new RootContext();
+
+    OperationParameter parameter = new OperationParameter(context);
+
+    Function<JsonValue> action = ResourceFunctions.newActionFunction(connectionFactory);
+
+    @Test(enabled = false)
     public void jsr223Test() throws Exception {
 
         // Example to use the stateless functions
@@ -105,9 +101,6 @@ public class ResourceFunctionsTest {
         // Use Spring or SCR to create this bean
         ScriptRegistryImpl registry = new ScriptRegistryImpl(
                 new HashMap<String, Object>(), ServiceLoader.load(ScriptEngineFactory.class), globalBinding);
-
-        // Setup the PersistenceConfig
-        registry.setPersistenceConfig(getPersistenceConfig(connectionFactory));
 
         // Find the Engine for the Script name
         ScriptEngine engine = registry.getEngineByName("JavaScript");
@@ -140,93 +133,107 @@ public class ResourceFunctionsTest {
     }
 
     @Test
-    public void actionTest(final ITestContext testContext) throws Exception {
+    public void testAction() throws Exception {
+        doAnswer(new Answer<Promise<ActionResponse, ResourceException>>() {
+            public Promise<ActionResponse, ResourceException> answer(InvocationOnMock invocation) throws Throwable {
+                // Context context = (Context) invocation.getArguments()[0];
+                // ActionRequest request = (ActionRequest) invocation.getArguments()[1];
+                return Promises.newResultPromise(trueResult);
+            }
+        }).when(resource).handleAction(any(Context.class), any(ActionRequest.class));
+
         // action(String endPoint[, String id], String type, Map params, Map content[, List fieldFilter][,Map context])
-        final JsonValue result = new JsonValue(true);
+        // action(String resourceName, [String actionId,] Map params, Map content[, List fieldFilter][,Map context])
+        Object[] arguments = new Object[] {
+                "resourceName",
+                "actionId",
+                new HashMap<String, Object>(),
+                new HashMap<String, Object>(),
+                new ArrayList<String>()
+        };
+        Assert.assertTrue(action.call(parameter, null, arguments).asBoolean());
+    }
 
-        final RequestHandler resource = mock(RequestHandler.class);
+    public static class CustomContext extends AbstractContext {
+        protected CustomContext(Context parent) {
+            super(parent, "custom");
+        }
+        protected CustomContext(JsonValue savedContext, ClassLoader classLoader) {
+            super(savedContext, classLoader);
+        }
+    }
 
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+    @Test
+    public void actionTestWithContext() throws Exception {
+
+        doAnswer(new Answer<Promise<ActionResponse, ResourceException>>() {
+            public Promise<ActionResponse, ResourceException> answer(InvocationOnMock invocation) throws Throwable {
+                Context context = (Context) invocation.getArguments()[0];
+                // return a true result if we're called with the custom context
+                return Promises.newResultPromise(
+                        Responses.newActionResponse(new JsonValue("custom".equals(context.getContextName()))));
+            }
+        }).when(resource).handleAction(any(Context.class), any(ActionRequest.class));
+
+        Context localContext = new CustomContext(context);
+
+        // action(String endPoint[, String id], String type, Map params, Map content[, List fieldFilter][,Map context])
+        // action(String resourceName, [String actionId,] Map params, Map content[, List fieldFilter][,Map context])
+        Object[] arguments = new Object[]{
+                "resourceName",
+                "actionId",
+                new HashMap<String, Object>(),
+                new HashMap<String, Object>(),
+                new ArrayList<String>(),
+                localContext
+        };
+        Assert.assertTrue(action.call(parameter, null, arguments).asBoolean());
+    }
+
+    @Test(expectedExceptions = NoSuchMethodException.class)
+    public void testActionMissingActionId() throws Exception {
+        doAnswer(new Answer<Promise<ActionResponse, ResourceException>>() {
+            public Promise<ActionResponse, ResourceException> answer(InvocationOnMock invocation) throws Throwable {
                 // ActionRequest request = (ActionRequest)
                 // invocation.getArguments()[1];
-                ResultHandler<JsonValue> handler = (ResultHandler<JsonValue>) invocation.getArguments()[2];
-                handler.handleResult(result);
-                return null;
+                return Promises.newResultPromise(trueResult);
             }
-        }).when(resource).handleAction(any(ServerContext.class), any(ActionRequest.class), any(ResultHandler.class));
+        }).when(resource).handleAction(any(Context.class), any(ActionRequest.class));
 
-        final ConnectionFactory connectionFactory = Resources.newInternalConnectionFactory(resource);
+        // action(String endPoint[, String id], String type, Map params, Map content[, List fieldFilter][,Map context])
+        // action(String resourceName, [String actionId,] Map params, Map content[, List fieldFilter][,Map context])
+        Object[] arguments = new Object[] {
+                "resourceName",
+                null,
+                "actionId",
+                new HashMap<String, Object>(),
+                new HashMap<String, Object>(),
+                new ArrayList<String>(),
+                new HashMap<String, Object>()
+        };
+        action.call(parameter, null, arguments);
+    }
 
-        ServerContext serverContext = new ServerContext(new RootContext());
-        final PersistenceConfig persistenceConfig =
-                PersistenceConfig.builder().connectionProvider(new ConnectionProvider() {
-                    @Override
-                    public Connection getConnection(String connectionId) throws ResourceException {
-                        return connectionFactory.getConnection();
-                    }
+    @Test(expectedExceptions = NoSuchMethodException.class)
+    public void testActionMissingContent() throws Exception {
+        doAnswer(new Answer<Promise<ActionResponse, ResourceException>>() {
+            public Promise<ActionResponse, ResourceException> answer(InvocationOnMock invocation) throws Throwable {
+                // ActionRequest request = (ActionRequest)
+                // invocation.getArguments()[1];
+                return Promises.newResultPromise(trueResult);
+            }
+        }).when(resource).handleAction(any(Context.class), any(ActionRequest.class));
 
-                    @Override
-                    public String getConnectionId(Connection connection) throws ResourceException {
-                        return "DEFAULT";
-                    }
-                }).build();
-
-        OperationParameter parameter =
-                new OperationParameter(serverContext, "DEFAULT", persistenceConfig);
-        /*
-         * new OperationParameter(serverContext) {
-         *
-         * @Override protected Object convertObject(Object source) { return
-         * source; }
-         *
-         * @Override protected Object convertFunction(Function source) { return
-         * source; }
-         *
-         * @Override protected Object convertLazyResource(LazyResource source) {
-         * return source; }
-         *
-         * @Override protected String getConnectionId() { return "DEFAULT"; }
-         *
-         * @Override public PersistenceConfig getPersistenceConfig() { return
-         * persistenceConfig; } };
-         */
-
-        // action(String resourceName, [String actionId,] Map params, Map
-        // content[, List fieldFilter][,Map context])
-
-        Function<JsonValue> action = ResourceFunctions.newActionFunction(connectionFactory);
-
-        Object[] arguments =
-                new Object[] { "resourceName", "actionId", new HashMap<String, Object>(),
-                    new HashMap<String, Object>(), new ArrayList<String>(), serverContext.toJsonValue() };
-        Assert.assertTrue(action.call(parameter, null, arguments).asBoolean());
-
-        arguments =
-                new Object[] { "resourceName", "actionId", new HashMap<String, Object>(),
-                    new HashMap<String, Object>(), new ArrayList<String>() };
-        Assert.assertTrue(action.call(parameter, null, arguments).asBoolean());
-
-        try {
-            arguments =
-                    new Object[] { "resourceName", null, "actionId", new HashMap<String, Object>(),
-                        new HashMap<String, Object>(), new ArrayList<String>(),
-                        new HashMap<String, Object>() };
-            action.call(parameter, null, arguments);
-            Assert.fail("No such method");
-        } catch (NoSuchMethodException e) {
-            /* expected */
-        }
-
-        arguments =
-                new Object[] { "resourceName", "actionId", new HashMap<String, Object>(),
-                    new ArrayList<String>(), new HashMap<String, Object>() };
-        try {
-            action.call(parameter, null, arguments);
-            Assert.fail("No such method");
-        } catch (NoSuchMethodException e) {
-            /* Expected */
-        }
+        // action(String endPoint[, String id], String type, Map params, Map content[, List fieldFilter][,Map context])
+        // action(String resourceName, [String actionId,] Map params, Map content[, List fieldFilter][,Map context])
+        Object[] arguments = new Object[] {
+                "resourceName",
+                "actionId",
+                new HashMap<String, Object>(),
+                new ArrayList<String>(),
+                new HashMap<String, Object>()
+        };
+        action.call(parameter, null, arguments);
     }
 
 }

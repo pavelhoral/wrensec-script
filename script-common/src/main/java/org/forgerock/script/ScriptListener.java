@@ -41,5 +41,5 @@ public interface ScriptListener {
      * @param event
      *            The {@code ScriptEvent} object.
      */
-    public void scriptChanged(ScriptEvent event) throws ScriptException;
+    void scriptChanged(ScriptEvent event) throws ScriptException;
 }

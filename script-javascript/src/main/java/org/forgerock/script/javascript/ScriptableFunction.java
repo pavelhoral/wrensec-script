@@ -24,7 +24,7 @@
 
 package org.forgerock.script.javascript;
 
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ResourceException;
 import org.forgerock.script.scope.Function;
 import org.forgerock.script.scope.OperationParameter;

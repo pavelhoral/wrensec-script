@@ -24,7 +24,7 @@
 
 package org.forgerock.script;
 
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.json.JsonValue;
 import org.forgerock.script.engine.ScriptEngine;
 import org.forgerock.script.source.SourceUnitObserver;
 
@@ -81,7 +81,7 @@ public interface ScriptRegistry extends SourceUnitObserver {
      *         {@code ScriptEntry} instance.
      * @throws NullPointerException
      *             if script is null.
-     * @throws org.forgerock.json.fluent.JsonValueException
+     * @throws org.forgerock.json.JsonValueException
      * @throws IllegalArgumentException
      * @throws ScriptException
      */

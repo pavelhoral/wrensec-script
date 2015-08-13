@@ -24,7 +24,7 @@
 
 package org.forgerock.script;
 
-import org.forgerock.json.resource.Context;
+import org.forgerock.http.Context;
 
 import javax.script.Bindings;
 
@@ -35,7 +35,7 @@ import javax.script.Bindings;
  */
 public interface ScriptEntry extends Scope {
 
-    public enum Visibility {
+    enum Visibility {
         PUBLIC, PRIVATE, DEFAULT;
     }
 
@@ -50,7 +50,7 @@ public interface ScriptEntry extends Scope {
      * @throws NullPointerException
      *             if the parameter o is null.
      */
-    public void addScriptListener(ScriptListener hook);
+    void addScriptListener(ScriptListener hook);
 
     /**
      * Deletes an observer from the set of observers of this object. Passing
@@ -59,7 +59,7 @@ public interface ScriptEntry extends Scope {
      * @param hook
      *            the observer to be deleted.
      */
-    public void deleteScriptListener(ScriptListener hook);
+    void deleteScriptListener(ScriptListener hook);
 
     /**
      * Get a new {@literal Non-ThreadSafe} Script instance.
@@ -68,7 +68,7 @@ public interface ScriptEntry extends Scope {
      *            the request {@code Context}
      * @return new Script instance
      */
-    public Script getScript(Context context);
+    Script getScript(Context context);
 
     /**
      * Get a JSR223 Script Engine aware binding.
@@ -79,11 +79,11 @@ public interface ScriptEntry extends Scope {
      *            the request bindings
      * @return new {@code Bindings} contains the service and global scope.
      */
-    public Bindings getScriptBindings(Context context, Bindings request);
+    Bindings getScriptBindings(Context context, Bindings request);
 
-    public ScriptName getName();
+    ScriptName getName();
 
-    public Visibility getVisibility();
+    Visibility getVisibility();
 
     /**
      * Returns <tt>true</tt> if this script can be evaluated.
@@ -94,6 +94,6 @@ public interface ScriptEntry extends Scope {
      *
      * @return <tt>true</tt> if this script can be evaluated
      */
-    public boolean isActive();
+    boolean isActive();
 
 }

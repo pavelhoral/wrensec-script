@@ -24,7 +24,7 @@
 
 package org.forgerock.script.javascript;
 
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.json.JsonValue;
 import org.forgerock.script.scope.AbstractFactory;
 import org.forgerock.script.scope.Parameter;
 import org.forgerock.util.LazyMap;

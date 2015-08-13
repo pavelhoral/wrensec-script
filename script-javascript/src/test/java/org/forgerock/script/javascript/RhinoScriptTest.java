@@ -30,8 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fest.assertions.core.Condition;
-import org.forgerock.json.fluent.JsonValue;
+import org.forgerock.http.Context;
+import org.forgerock.http.context.RootContext;
+import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ActionRequest;
 import org.forgerock.json.resource.CreateRequest;
 import org.forgerock.json.resource.DeleteRequest;
@@ -40,7 +43,7 @@ import org.forgerock.json.resource.PatchRequest;
 import org.forgerock.json.resource.QueryRequest;
 import org.forgerock.json.resource.ReadRequest;
 import org.forgerock.json.resource.Requests;
-import org.forgerock.json.resource.RootContext;
+import org.forgerock.json.resource.SecurityContext;
 import org.forgerock.json.resource.UpdateRequest;
 import org.forgerock.script.Script;
 import org.forgerock.script.ScriptEntry;
@@ -50,6 +53,7 @@ import org.forgerock.script.source.EmbeddedScriptSource;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.forgerock.json.JsonValue.json;
 
 /**
  * A NAME does ...
@@ -58,6 +62,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
  */
 @Test
 public class RhinoScriptTest extends ScriptTest {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     protected Map<String, Object> getConfiguration() {
         Map<String, Object> configuration = new HashMap<String, Object>(1);
@@ -176,7 +182,7 @@ public class RhinoScriptTest extends ScriptTest {
         assertThat(result).is(new Condition<String>() {
             @Override
             public boolean matches(String value) {
-                return value.matches(".*\"resourceName\"\\s*:\\s*\"some/path\".*");
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path\".*");
             }
         });
         assertThat(result).is(new Condition<String>() {
@@ -207,7 +213,7 @@ public class RhinoScriptTest extends ScriptTest {
         assertThat(result).is(new Condition<String>() {
             @Override
             public boolean matches(String value) {
-                return value.matches(".*\"resourceName\"\\s*:\\s*\"some/path\".*");
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path\".*");
             }
         });
         assertThat(result).is(new Condition<String>() {
@@ -242,7 +248,7 @@ public class RhinoScriptTest extends ScriptTest {
         assertThat(result).is(new Condition<String>() {
             @Override
             public boolean matches(String value) {
-                return value.matches(".*\"resourceName\"\\s*:\\s*\"some/path/myId\".*");
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path/myId\".*");
             }
         });
     }
@@ -264,7 +270,7 @@ public class RhinoScriptTest extends ScriptTest {
         assertThat(result).is(new Condition<String>() {
             @Override
             public boolean matches(String value) {
-                return value.matches(".*\"resourceName\"\\s*:\\s*\"some/path/myId\".*");
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path/myId\".*");
             }
         });
         assertThat(result).is(new Condition<String>() {
@@ -297,7 +303,7 @@ public class RhinoScriptTest extends ScriptTest {
         assertThat(result).is(new Condition<String>() {
             @Override
             public boolean matches(String value) {
-                return value.matches(".*\"resourceName\"\\s*:\\s*\"some/path/myId\".*");
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path/myId\".*");
             }
         });
         assertThat(result).is(new Condition<String>() {
@@ -342,7 +348,7 @@ public class RhinoScriptTest extends ScriptTest {
         assertThat(result).is(new Condition<String>() {
             @Override
             public boolean matches(String value) {
-                return value.matches(".*\"resourceName\"\\s*:\\s*\"some/path/myId\".*");
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path/myId\".*");
             }
         });
         assertThat(result).is(new Condition<String>() {
@@ -372,7 +378,7 @@ public class RhinoScriptTest extends ScriptTest {
         assertThat(result).is(new Condition<String>() {
             @Override
             public boolean matches(String value) {
-                return value.matches(".*\"resourceName\"\\s*:\\s*\"some/path/myId\".*");
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path/myId\".*");
             }
         });
         assertThat(result).is(new Condition<String>() {
@@ -387,5 +393,106 @@ public class RhinoScriptTest extends ScriptTest {
                 return value.matches(".*\\{\\s*\"operation\"\\s*:\\s*\"add\"\\s*,\\s*\"field\"\\s*:\\s*\"/field\"\\s*,\\s*\"value\"\\s*:\\s*\"value\"\\s*\\}.*");
             }
         });
+    }
+
+    @Test
+    public void testContextToString() throws Exception {
+        ScriptEntry scriptEntry = getScriptRegistry().takeScript(new ScriptName("printobject", getLanguageName()));
+        Script script = scriptEntry.getScript(new RootContext());
+        final Context context = new SecurityContext(new RootContext(), "bjensen@example.com", null);
+        script.put("ketto", context);
+        String result = (String) script.eval();
+        /*
+            {
+              "security": {
+                "name": "security",
+                "rootContext": false,
+                "authorizationId": {},
+                "authenticationId": "bjensen@example.com",
+                "parent": {
+                  "name": "root",
+                  "rootContext": true,
+                  "parent": null,
+                  "id": "d51293e4-46aa-4f4c-b784-6948790c826c1"
+                },
+                "id": "d51293e4-46aa-4f4c-b784-6948790c826c1"
+              },
+              "parent": {
+                "name": "root",
+                "rootContext": true,
+                "parent": null,
+                "id": "d51293e4-46aa-4f4c-b784-6948790c826c1"
+              },
+              "current": {
+                "name": "security",
+                "rootContext": false,
+                "authorizationId": {},
+                "authenticationId": "bjensen@example.com",
+                "parent": {
+                  "name": "root",
+                  "rootContext": true,
+                  "parent": null,
+                  "id": "d51293e4-46aa-4f4c-b784-6948790c826c1"
+                },
+                "id": "d51293e4-46aa-4f4c-b784-6948790c826c1"
+              },
+              "root": {
+                "name": "root",
+                "rootContext": true,
+                "parent": null,
+                "id": "d51293e4-46aa-4f4c-b784-6948790c826c1"
+              }
+            }
+         */
+        // result is actually a json map
+        JsonValue value = json(OBJECT_MAPPER.readValue(result, Object.class));
+        assertThat(value.get("current").get("name").asString()).isEqualTo("security");
+        assertThat(value.get("root").get("name").asString()).isEqualTo("root");
+        assertThat(value.get("security").get("name").asString()).isEqualTo("security");
+        assertThat(value.get("security").get("authenticationId").asString()).isEqualTo("bjensen@example.com");
+    }
+
+    @Test
+    public void testContextAccess() throws Exception {
+        ScriptEntry scriptEntry = getScriptRegistry().takeScript(new ScriptName("context", getLanguageName()));
+        Script script = scriptEntry.getScript(new RootContext());
+        final Context context = new SecurityContext(new RootContext(), "bjensen@example.com", null);
+        script.put("context", context);
+        Object result = script.eval();
+        System.out.println(result);
+        /*
+        assertThat(result).is(new Condition<String>() {
+            @Override
+            public boolean matches(String value) {
+                return value.matches(".*\"method\"\\s*:\\s*\"action\".*");
+            }
+        });
+        assertThat(result).is(new Condition<String>() {
+            @Override
+            public boolean matches(String value) {
+                return value.matches(".*\"resourcePath\"\\s*:\\s*\"some/path/myId\".*");
+            }
+        });
+        assertThat(result).is(new Condition<String>() {
+            @Override
+            public boolean matches(String value) {
+                return value.matches(".*\"action\"\\s*:\\s*\"myAction\".*");
+            }
+        });
+        assertThat(result).is(new Condition<String>() {
+            @Override
+            public boolean matches(String value) {
+                return value.matches(".*\"additionalParameters\"\\s*:\\s*\\{\\s*\"arg\"\\s*:\\s*\"value\"\\s*\\}.*");
+            }
+        });
+        assertThat(result).is(new Condition<String>() {
+            @Override
+            public boolean matches(String value) {
+                return value.matches(".*\"content\"\\s*:\\s*.*\"field1\"\\s*:\\s*\"value1\".*")
+                        && value.matches(".*\"content\"\\s*:\\s*.*\"field1\"\\s*:\\s*\"value1\".*")
+                        && value.matches(".*\"content\"\\s*:\\s*.*\"complexfield\"\\s*:\\s*\\[\\s*\"1\"\\s*,\\s*\"2\"\\s*,\\s*\"3\"\\s*\\].*");
+            }
+        });
+        */
     }
 }

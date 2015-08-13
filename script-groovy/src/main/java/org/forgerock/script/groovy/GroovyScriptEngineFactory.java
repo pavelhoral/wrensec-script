@@ -25,7 +25,6 @@
 package org.forgerock.script.groovy;
 
 import groovy.lang.GroovySystem;
-import org.forgerock.json.resource.PersistenceConfig;
 import org.forgerock.script.engine.ScriptEngine;
 import org.forgerock.script.engine.ScriptEngineFactory;
 import org.forgerock.script.source.SourceContainer;
@@ -35,7 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A NAME does ...
@@ -95,14 +93,13 @@ public class GroovyScriptEngineFactory implements ScriptEngineFactory {
         return GroovySystem.getVersion();
     }
 
-    public ScriptEngine getScriptEngine(final AtomicReference<PersistenceConfig> persistenceConfig,
-            Map<String, Object> configuration, Collection<SourceContainer> sourceContainers,
+    public ScriptEngine getScriptEngine(Map<String, Object> configuration, Collection<SourceContainer> sourceContainers,
             ClassLoader registryLevelClassLoader) {
         if (null == engine) {
             synchronized (this) {
                 if (null == engine) {
                     // TODO use registry-level class loader
-                    engine = new GroovyScriptEngineImpl(configuration, this, persistenceConfig);
+                    engine = new GroovyScriptEngineImpl(configuration, this);
                 }
             }
         }

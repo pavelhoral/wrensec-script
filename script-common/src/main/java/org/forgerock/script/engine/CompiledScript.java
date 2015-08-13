@@ -24,7 +24,7 @@
 
 package org.forgerock.script.engine;
 
-import org.forgerock.json.resource.Context;
+import org.forgerock.http.Context;
 
 import javax.script.Bindings;
 import javax.script.ScriptException;
