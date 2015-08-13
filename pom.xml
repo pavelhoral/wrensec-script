@@ -63,7 +63,8 @@
         <connection>scm:git:ssh://git@stash.forgerock.org:7999/commons/forgerock-script.git</connection>
         <developerConnection>scm:git:ssh://git@stash.forgerock.org:7999/commons/forgerock-script.git</developerConnection>
         <url>http://stash.forgerock.org/projects/COMMONS/repos/forgerock-script/browse</url>
-    </scm>
+      <tag>1.x</tag>
+  </scm>
     <distributionManagement>
         <site>
             <id>community.internal.forgerock.com</id>
