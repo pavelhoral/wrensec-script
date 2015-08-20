@@ -111,6 +111,8 @@ class Converter {
             return wrap(parameter, (JsonValue) value, scope, doCopy);
         } else if (value instanceof JsonPointer) {
             return wrap(parameter, value.toString(), scope, doCopy);
+        } else if (value instanceof Request) {
+            return wrap(parameter, (Request) value, scope);
         } else if (value instanceof org.forgerock.http.Context) {
            return wrap(parameter, (org.forgerock.http.Context) value, scope);
         } else {
@@ -156,6 +158,47 @@ class Converter {
             return wrap(parameter, value.asList(), scope, doCopy);
         } else {
             return wrap(parameter, value.getObject(), scope, doCopy);
+        }
+    }
+
+    public static final Object wrap(final Parameter parameter, final Request value, final Scriptable scope) {
+        if (value instanceof CreateRequest) {
+            ScriptableCreateRequest result = new ScriptableCreateRequest(parameter, (CreateRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        }
+        else if (value instanceof DeleteRequest) {
+            ScriptableDeleteRequest result = new ScriptableDeleteRequest(parameter, (DeleteRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        }
+        else if (value instanceof PatchRequest) {
+            ScriptablePatchRequest result = new ScriptablePatchRequest(parameter, (PatchRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        }
+        else if (value instanceof QueryRequest) {
+            ScriptableQueryRequest result = new ScriptableQueryRequest(parameter, (QueryRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        }
+        else if (value instanceof ReadRequest) {
+            ScriptableReadRequest result = new ScriptableReadRequest(parameter, (ReadRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        }
+        else if (value instanceof UpdateRequest) {
+            ScriptableUpdateRequest result = new ScriptableUpdateRequest(parameter, (UpdateRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        }
+        else if (value instanceof ActionRequest) {
+            ScriptableActionRequest result = new ScriptableActionRequest(parameter, (ActionRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        } else {
+            // we shouldn't get here...
+            return Context.javaToJS(value, scope);
         }
     }
 
