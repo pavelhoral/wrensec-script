@@ -24,12 +24,12 @@
 
 package org.forgerock.script.javascript;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.CreateRequest;
 import org.forgerock.script.scope.Parameter;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -90,7 +90,7 @@ class ScriptableCreateRequest extends AbstractScriptableRequest implements Wrapp
         // TODO allow updating content and newResourceId
         if (CreateRequest.FIELD_CONTENT.equals(name)) {
             try {
-                Object json = JSON_MAPPER.getJsonFactory().createJsonParser((String) value).readValueAs(Object.class);
+                Object json = JSON_MAPPER.readValue((String) value, Object.class);
                 if (json == null) {
                     request.setContent(new JsonValue(new LinkedHashMap<String, Object>(0)));
                 } else if (json instanceof Map) {
