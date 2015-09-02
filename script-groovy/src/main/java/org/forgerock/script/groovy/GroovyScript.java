@@ -44,17 +44,23 @@
 
 package org.forgerock.script.groovy;
 
-import groovy.lang.Binding;
-import groovy.lang.Closure;
-import groovy.lang.DelegatingMetaClass;
-import groovy.lang.MetaClass;
-import groovy.lang.MissingMethodException;
-import groovy.lang.Script;
-import groovy.lang.Tuple;
-import groovy.util.ResourceException;
-import org.codehaus.groovy.control.CompilationFailedException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.script.Bindings;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+
 import org.codehaus.groovy.runtime.MetaClassHelper;
 import org.codehaus.groovy.runtime.MethodClosure;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.forgerock.services.context.Context;
 import org.forgerock.script.engine.CompiledScript;
 import org.forgerock.script.exception.ScriptCompilationException;
@@ -66,17 +72,14 @@ import org.forgerock.script.scope.Parameter;
 import org.forgerock.util.Factory;
 import org.forgerock.util.LazyMap;
 
-import javax.script.Bindings;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import groovy.lang.Binding;
+import groovy.lang.Closure;
+import groovy.lang.DelegatingMetaClass;
+import groovy.lang.MetaClass;
+import groovy.lang.MissingMethodException;
+import groovy.lang.Script;
+import groovy.lang.Tuple;
+import groovy.util.ResourceException;
 
 /**
  * A JavaScript script.
@@ -231,6 +234,20 @@ public class GroovyScript implements CompiledScript {
 
             try {
                 return scriptObject.run();
+            } catch (UndeclaredThrowableException e){
+                if (e.getUndeclaredThrowable() instanceof org.forgerock.json.resource.ResourceException) {
+                    org.forgerock.json.resource.ResourceException resourceException =
+                            (org.forgerock.json.resource.ResourceException) e
+                                    .getUndeclaredThrowable();
+                    throw new ScriptThrownException(resourceException, resourceException
+                            .toJsonValue().asMap());
+                } else if (e.getUndeclaredThrowable() instanceof ScriptException) {
+                    throw (ScriptException) e.getUndeclaredThrowable();
+                } else if (e.getUndeclaredThrowable() instanceof Exception) {
+                    throw new ScriptThrownException((Exception) e.getUndeclaredThrowable(), null);
+                } else {
+                    throw new ScriptThrownException(e, e.getUndeclaredThrowable());
+                }
             } catch (Exception e) {
                 throw new ScriptThrownException(e.getMessage(), e);
             }
