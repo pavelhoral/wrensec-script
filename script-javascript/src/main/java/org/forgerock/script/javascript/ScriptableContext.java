@@ -30,20 +30,16 @@ import static org.forgerock.json.JsonValue.object;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.forgerock.http.Context;
+import org.forgerock.http.context.ClientContext;
 import org.forgerock.json.JsonValue;
-import org.forgerock.json.resource.ClientContext;
-import org.forgerock.json.resource.http.HttpContext;
 import org.forgerock.script.scope.Parameter;
-import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 import org.mozilla.javascript.annotations.JSFunction;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;

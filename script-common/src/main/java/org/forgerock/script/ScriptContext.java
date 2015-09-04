@@ -26,19 +26,20 @@ package org.forgerock.script;
 
 import org.forgerock.http.context.AbstractContext;
 import org.forgerock.http.Context;
+import org.forgerock.http.context.ClientContext;
 import org.forgerock.json.JsonValue;
-import org.forgerock.json.resource.ClientContext;
 
 /**
- * A client context to wrap the calling context when entering a script.
+ * A context to wrap the calling context when entering a script.
  */
-public class ScriptContext extends AbstractContext implements ClientContext {
+public class ScriptContext extends AbstractContext {
     private static final String ATTR_SCRIPT_NAME = "scriptName";
     private static final String ATTR_SCRIPT_TYPE = "scriptType";
     private static final String ATTR_SCRIPT_REVISION = "scriptRevision";
 
     public ScriptContext(Context parent, String name, String type, String revision) {
-        super(parent, "script");
+        // add an internal context when entering a script
+        super(ClientContext.newInternalClientContext(parent), "script");
         data.put(ATTR_SCRIPT_NAME, name);
         data.put(ATTR_SCRIPT_TYPE, type);
         data.put(ATTR_SCRIPT_REVISION, revision);
@@ -46,13 +47,6 @@ public class ScriptContext extends AbstractContext implements ClientContext {
 
     public ScriptContext(JsonValue savedContext, ClassLoader classLoader) {
         super(savedContext, classLoader);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isExternal() {
-        return false;
     }
 
     public String getName() {
