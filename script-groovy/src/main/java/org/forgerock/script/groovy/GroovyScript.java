@@ -55,7 +55,7 @@ import groovy.util.ResourceException;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.MetaClassHelper;
 import org.codehaus.groovy.runtime.MethodClosure;
-import org.forgerock.http.Context;
+import org.forgerock.services.context.Context;
 import org.forgerock.script.engine.CompiledScript;
 import org.forgerock.script.exception.ScriptCompilationException;
 import org.forgerock.script.exception.ScriptThrownException;

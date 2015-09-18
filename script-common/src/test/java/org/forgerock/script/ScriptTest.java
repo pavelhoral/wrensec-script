@@ -24,8 +24,8 @@
 
 package org.forgerock.script;
 
-import org.forgerock.http.Context;
-import org.forgerock.http.context.RootContext;
+import org.forgerock.services.context.Context;
+import org.forgerock.services.context.RootContext;
 import org.forgerock.http.routing.RoutingMode;
 import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ActionRequest;
@@ -45,7 +45,7 @@ import org.forgerock.json.resource.Resources;
 import org.forgerock.json.resource.Responses;
 import org.forgerock.json.resource.Router;
 import org.forgerock.json.resource.SingletonResourceProvider;
-import org.forgerock.json.resource.SecurityContext;
+import org.forgerock.services.context.SecurityContext;
 import org.forgerock.json.resource.UpdateRequest;
 import org.forgerock.script.engine.ScriptEngineFactory;
 import org.forgerock.script.exception.ScriptCompilationException;

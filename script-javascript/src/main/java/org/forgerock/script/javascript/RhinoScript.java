@@ -242,13 +242,13 @@ public class RhinoScript implements CompiledScript {
         return name.indexOf("/") != -1 ? name.substring(name.lastIndexOf("/") + 1) : name;
     }
 
-    public Bindings prepareBindings(org.forgerock.http.Context context, Bindings request, Bindings... scopes) {
+    public Bindings prepareBindings(org.forgerock.services.context.Context context, Bindings request, Bindings... scopes) {
         // TODO Fix it later
         return new SimpleBindings();
     }
 
     @Override
-    public Object eval(final org.forgerock.http.Context ctx, Bindings request, Bindings... scopes)
+    public Object eval(final org.forgerock.services.context.Context ctx, Bindings request, Bindings... scopes)
             throws ScriptException {
 
         Context context = Context.enter();

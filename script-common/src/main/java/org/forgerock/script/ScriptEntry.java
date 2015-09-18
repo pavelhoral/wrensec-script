@@ -24,7 +24,7 @@
 
 package org.forgerock.script;
 
-import org.forgerock.http.Context;
+import org.forgerock.services.context.Context;
 
 import javax.script.Bindings;
 

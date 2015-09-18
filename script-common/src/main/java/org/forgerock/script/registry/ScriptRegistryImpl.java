@@ -24,7 +24,7 @@
 
 package org.forgerock.script.registry;
 
-import org.forgerock.http.Context;
+import org.forgerock.services.context.Context;
 import org.forgerock.json.JsonValue;
 import org.forgerock.script.Scope;
 import org.forgerock.script.Script;

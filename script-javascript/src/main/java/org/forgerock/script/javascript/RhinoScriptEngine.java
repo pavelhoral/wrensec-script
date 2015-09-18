@@ -253,7 +253,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         return factory;
     }
 
-    public OperationParameter getOperationParameter(final org.forgerock.http.Context context) {
+    public OperationParameter getOperationParameter(final org.forgerock.services.context.Context context) {
         return new OperationParameter(context);
     }
 
@@ -313,7 +313,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
     }
 
     @Override
-    public Bindings compileBindings(org.forgerock.http.Context context, Bindings request, Bindings... value) {
+    public Bindings compileBindings(org.forgerock.services.context.Context context, Bindings request, Bindings... value) {
         return null;
     }
 

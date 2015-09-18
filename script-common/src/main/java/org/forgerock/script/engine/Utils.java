@@ -25,7 +25,7 @@
 package org.forgerock.script.engine;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.forgerock.http.Context;
+import org.forgerock.services.context.Context;
 import org.forgerock.json.JsonPointer;
 import org.forgerock.json.JsonValue;
 import org.forgerock.json.JsonValueException;

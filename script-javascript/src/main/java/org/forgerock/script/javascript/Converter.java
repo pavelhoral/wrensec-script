@@ -113,8 +113,8 @@ class Converter {
             return wrap(parameter, value.toString(), scope, doCopy);
         } else if (value instanceof Request) {
             return wrap(parameter, (Request) value, scope);
-        } else if (value instanceof org.forgerock.http.Context) {
-           return wrap(parameter, (org.forgerock.http.Context) value, scope);
+        } else if (value instanceof org.forgerock.services.context.Context) {
+           return wrap(parameter, (org.forgerock.services.context.Context) value, scope);
         } else {
             return Context.javaToJS(value, scope);
         }
@@ -202,7 +202,7 @@ class Converter {
         }
     }
 
-    public static final Object wrap(final Parameter parameter, final org.forgerock.http.Context value, final Scriptable scope) {
+    public static final Object wrap(final Parameter parameter, final org.forgerock.services.context.Context value, final Scriptable scope) {
         ScriptableContext result = new ScriptableContext(parameter, value);
         ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
         return result;
@@ -269,7 +269,7 @@ class Converter {
         } else if (value instanceof Number || value instanceof String || value instanceof Boolean
                 || value instanceof Map || value instanceof List) {
             result = value; // already valid JSON element
-        } else if (value instanceof Request || value instanceof org.forgerock.http.Context) {
+        } else if (value instanceof Request || value instanceof org.forgerock.services.context.Context) {
             return value;
         } else if (value instanceof CharSequence) {
             result = value.toString();

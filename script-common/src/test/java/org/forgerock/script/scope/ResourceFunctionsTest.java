@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.forgerock.http.context.AbstractContext;
+import org.forgerock.services.context.AbstractContext;
 import org.forgerock.json.resource.ActionResponse;
 import org.forgerock.json.resource.Responses;
 import org.mockito.invocation.InvocationOnMock;
@@ -45,8 +45,8 @@ import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import org.forgerock.http.Context;
-import org.forgerock.http.context.RootContext;
+import org.forgerock.services.context.Context;
+import org.forgerock.services.context.RootContext;
 import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ActionRequest;
 import org.forgerock.json.resource.ConnectionFactory;

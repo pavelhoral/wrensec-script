@@ -36,7 +36,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.forgerock.http.Context;
+import org.forgerock.services.context.Context;
 import org.forgerock.script.engine.AbstractScriptEngine;
 import org.forgerock.script.engine.CompilationHandler;
 import org.forgerock.script.engine.ScriptEngineFactory;

@@ -24,9 +24,9 @@
 
 package org.forgerock.script;
 
-import org.forgerock.http.context.AbstractContext;
-import org.forgerock.http.Context;
-import org.forgerock.http.context.ClientContext;
+import org.forgerock.services.context.AbstractContext;
+import org.forgerock.services.context.Context;
+import org.forgerock.services.context.ClientContext;
 import org.forgerock.json.JsonValue;
 
 /**

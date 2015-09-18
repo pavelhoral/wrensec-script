@@ -29,8 +29,8 @@ import static org.forgerock.json.JsonValue.json;
 import static org.forgerock.json.JsonValue.object;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.forgerock.http.Context;
-import org.forgerock.http.context.ClientContext;
+import org.forgerock.services.context.Context;
+import org.forgerock.services.context.ClientContext;
 import org.forgerock.json.JsonValue;
 import org.forgerock.script.scope.Parameter;
 import org.mozilla.javascript.NativeObject;
