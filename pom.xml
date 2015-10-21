@@ -106,7 +106,7 @@
         </siteDistributionURL>
 
         <!-- Commons forgerock-rest versions -->
-        <commons.forgerock-bom.version>1.0.0-SNAPSHOT</commons.forgerock-bom.version>
+        <commons.forgerock-bom.version>1.0.0</commons.forgerock-bom.version>
 
         <!--<commons.script.osgi.import.default.version>-->
         <!--[$(version;==;$(@)),$(version;+;$(@)))-->
