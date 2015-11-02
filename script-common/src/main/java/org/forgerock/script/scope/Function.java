@@ -31,9 +31,7 @@ import java.io.Serializable;
 /**
  * Exposes a function that can be provided to a script to invoke.
  *
- * @param <R>
- *            Type of the return value of this function.
- * @author Laszlo Hordos
+ * @param <R> Type of the return value of this function.
  */
 public interface Function<R> extends Serializable {
 
@@ -42,14 +40,13 @@ public interface Function<R> extends Serializable {
      *
      * @param scope
      * @param callback
-     * @param arguments
-     *            could be a single value or a List of values
+     * @param arguments could be a single value or a List of values
      * @return computed result
      * @throws Exception
      *             if unable to compute a result
      * @throws ResourceException
      * @throws NoSuchMethodException
      */
-    public R call(Parameter scope, Function<?> callback, Object... arguments)
+    R call(Parameter scope, Function<?> callback, Object... arguments)
             throws ResourceException, NoSuchMethodException;
 }

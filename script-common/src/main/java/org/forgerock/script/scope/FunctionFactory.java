@@ -24,8 +24,6 @@
 
 package org.forgerock.script.scope;
 
-import org.forgerock.json.JsonValue;
-import org.forgerock.json.resource.ConnectionFactory;
 import org.forgerock.json.resource.ResourceException;
 import org.forgerock.util.Factory;
 import org.forgerock.util.LazyMap;
@@ -179,47 +177,5 @@ public class FunctionFactory {
         });
     }
 
-    /*
-     *
-     * action(String endPoint[, String id], String type, Map params, Map
-     * content[, List fieldFilter][,Map context])
-     *
-     * create(String endPoint[, String id], Map content[, List fieldFilter][,Map
-     * context])
-     *
-     * delete(String endPoint, String id[, String rev][, List fieldFilter][,Map
-     * context])
-     *
-     * patch(String endPoint[, String id], Map content [, String rev][, List
-     * fieldFilter][,Map context])
-     *
-     * query(String endPoint[, Map params][, String filter][, List
-     * fieldFilter][,Map context])
-     *
-     * read(String endPoint[, String id][, List fieldFilter][,Map context])
-     *
-     * update(String endPoint[, String id], Map content [, String rev][, List
-     * fieldFilter][,Map context])
-     *
-     * @return
-     */
-    public static Map<String, Function<JsonValue>> getResource(final ConnectionFactory connectionFactory) {
-        return new LazyMap<String, Function<JsonValue>>(
-                new Factory<Map<String, Function<JsonValue>>>() {
-                    @Override
-                    public Map<String, Function<JsonValue>> newInstance() {
-                        Map<String, Function<JsonValue>> functions = new HashMap<String, Function<JsonValue>>(7);
 
-                        functions.put("create", ResourceFunctions.newCreateFunction(connectionFactory));
-                        functions.put("read", ResourceFunctions.newReadFunction(connectionFactory));
-                        functions.put("update", ResourceFunctions.newUpdateFunction(connectionFactory));
-                        functions.put("patch", ResourceFunctions.newPatchFunction(connectionFactory));
-                        functions.put("query", ResourceFunctions.newQueryFunction(connectionFactory));
-                        functions.put("delete", ResourceFunctions.newDeleteFunction(connectionFactory));
-                        functions.put("action", ResourceFunctions.newActionFunction(connectionFactory));
-
-                        return functions;
-                    }
-                });
-    }
 }
