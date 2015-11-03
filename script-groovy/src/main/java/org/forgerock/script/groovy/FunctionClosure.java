@@ -71,7 +71,7 @@ public class FunctionClosure extends Closure<JsonValue> {
                             Class[] paramTypes = nativeClosure.getParameterTypes();
                             Object[] params = new Object[paramTypes.length];
                             for (int i = 0; i < paramTypes.length; i++) {
-                                if (i < arguments.length - 1) {
+                                if (i < arguments.length) {
                                     params[i] = arguments[i];
                                 } else {
                                     params[i] = null;
