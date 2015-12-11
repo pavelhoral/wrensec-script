@@ -184,6 +184,7 @@ public class RhinoScript implements CompiledScript {
         if (!sharedScope) {
             // somewhat expensive
             ScriptableObject scope = context.initStandardObjects();
+            installRequire(context, scope);
             return scope;
         }
         // lazy initialization race condition is harmless
@@ -202,11 +203,18 @@ public class RhinoScript implements CompiledScript {
                 }
             }
             addLoggerProperty(scope);
+            installRequire(context, scope);
             // seal the whole scope (not just standard objects)
             scope.sealObject();
             topSharedScope = scope;
         }
         return topSharedScope;
+    }
+
+    // install require function per unofficial CommonJS author documentation
+    // https://groups.google.com/d/msg/mozilla-rhino/HCMh_lAKiI4/P1MA3sFsNKQJ
+    private void installRequire(final Context context, final ScriptableObject scope) {
+        requireBuilder.createRequire(context, scope).install(scope);
     }
 
     /**
@@ -303,10 +311,6 @@ public class RhinoScript implements CompiledScript {
                                                          // properties
             inner.setPrototype(outer);
             inner.setParentScope(null);
-
-            // install require function per unofficial CommonJS author documentation
-            // https://groups.google.com/d/msg/mozilla-rhino/HCMh_lAKiI4/P1MA3sFsNKQJ
-            requireBuilder.createRequire(context, inner).install(inner);
 
             final Script scriptInstance = null != script ? script : engine.createScript(scriptName);
             Object result = Converter.convert(scriptInstance.exec(context, inner));
