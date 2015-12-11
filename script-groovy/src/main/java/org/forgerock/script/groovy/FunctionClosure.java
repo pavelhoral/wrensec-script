@@ -1,7 +1,7 @@
 /*
  * DO NOT REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 ForgeRock AS. All rights reserved.
+ * Copyright (c) 2012-2015 ForgeRock AS. All rights reserved.
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -33,9 +33,7 @@ import org.forgerock.script.scope.Parameter;
 import java.util.Arrays;
 
 /**
- * A NAME does ...
- *
- * @author Laszlo Hordos
+ * 
  */
 public class FunctionClosure extends Closure<JsonValue> {
 
@@ -62,9 +60,9 @@ public class FunctionClosure extends Closure<JsonValue> {
                 if (nativeClosure instanceof FunctionClosure) {
                     callbackFunction = ((FunctionClosure) nativeClosure).function;
                 } else {
-                    callbackFunction = new Function<Void>() {
+                    callbackFunction = new Function<Object>() {
                         @Override
-                        public Void call(final Parameter scope0, final Function<?> callback,
+                        public Object call(final Parameter scope0, final Function<?> callback,
                                 final Object... arguments) throws ResourceException,
                                 NoSuchMethodException {
 
@@ -77,13 +75,7 @@ public class FunctionClosure extends Closure<JsonValue> {
                                     params[i] = null;
                                 }
                             }
-                            try {
-                                nativeClosure.call(params);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                // TODO do something
-                            }
-                            return null;
+                            return nativeClosure.call(params);
                         }
                     };
                 }
