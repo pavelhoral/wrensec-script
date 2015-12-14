@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.forgerock.commons</groupId>
         <artifactId>forgerock-script</artifactId>
-        <version>3.0.3-SNAPSHOT</version>
+        <version>3.0.3</version>
     </parent>
     <artifactId>script-javascript</artifactId>
     <packaging>bundle</packaging>
