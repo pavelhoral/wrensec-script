@@ -1,28 +1,22 @@
 /*
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * The contents of this file are subject to the terms of the Common Development and
+ * Distribution License (the License). You may not use this file except in compliance with the
+ * License.
  *
- * Copyright (c) 2013-2015 ForgeRock AS. All Rights Reserved
+ * You can obtain a copy of the License at legal/CDDLv1.0.txt. See the License for the
+ * specific language governing permission and limitations under the License.
  *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License). You may not use this file except in
- * compliance with the License.
+ * When distributing Covered Software, include this CDDL Header Notice in each file and include
+ * the License file at legal/CDDLv1.0.txt. If applicable, add the following below the CDDL
+ * Header, with the fields enclosed by brackets [] replaced by your own identifying
+ * information: "Portions copyright [year] [name of copyright owner]".
  *
- * You can obtain a copy of the License at
- * http://forgerock.org/license/CDDLv1.0.html
- * See the License for the specific language governing
- * permission and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at http://forgerock.org/license/CDDLv1.0.html
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * your own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
+ * Copyright 2013-2016 ForgeRock AS.
  */
 
 package org.forgerock.script.registry;
+
+import static org.forgerock.json.JsonValueFunctions.enumConstant;
 
 import org.forgerock.services.context.Context;
 import org.forgerock.json.JsonValue;
@@ -91,6 +85,15 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
 
     private final ConcurrentHashMap<ScriptName, LibraryRecord> cache =
             new ConcurrentHashMap<ScriptName, LibraryRecord>();
+
+    /**
+     * {@link ScriptListener} instances that were registered before the corresponding {@link LibraryRecord} was
+     * initialized, and which will be registered during initialization.
+     * <p>
+     * All access to this field must be completed within a {@code synchronized}-block, so that it is only added-to
+     * when {@link #cache} has not been initialized for a given target {@link ScriptName}.
+     */
+    private final Map<ScriptName, Set<ScriptListener>> pendingScriptListeners = new HashMap<>();
 
     private final LinkedHashMap<ScriptName, SourceContainer> sourceCache =
             new LinkedHashMap<ScriptName, SourceContainer>();
@@ -225,7 +228,7 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
                 addSourceUnit(new EmbeddedScriptSource(source.asString(), scriptName));
             } else {
                 addSourceUnit(new EmbeddedScriptSource(visibility
-                        .asEnum(ScriptEntry.Visibility.class), source.asString(), scriptName));
+                        .as(enumConstant(ScriptEntry.Visibility.class)), source.asString(), scriptName));
             }
         }
         ScriptEntry scriptEntry = takeScript(scriptName);
@@ -379,9 +382,7 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
             }
         }
 
-        // This method is not Thread-Safe but it's called from synchronized
-        // blocks only
-        private void compile() throws ScriptException {
+        private synchronized void compile() throws ScriptException {
             ScriptEngine engine = null != scriptEngine ? scriptEngine.get() : null;
             if (null == source) {
                 source = findScriptSource(scriptName);
@@ -586,23 +587,36 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
 
     public void addScriptListener(ScriptName name, ScriptListener hook) {
         if (null != hook && null != name) {
-            LibraryRecord record = cache.get(name);
-            if (null == record) {
-                LibraryRecord newRecord = new LibraryRecord(name);
-                record = cache.putIfAbsent(name, newRecord);
-                if (record == null) {
-                    record = newRecord;
+            synchronized (this) {
+                LibraryRecord record = cache.get(name);
+                if (null == record) {
+                    // add hooks to list, to be registered later
+                    Set<ScriptListener> scriptListeners = pendingScriptListeners.get(name);
+                    if (scriptListeners == null) {
+                        scriptListeners = new HashSet<>();
+                        pendingScriptListeners.put(name, scriptListeners);
+                    }
+                    scriptListeners.add(hook);
+                } else {
+                    // add listener immediately
+                    record.addScriptListener(hook);
                 }
             }
-            record.addScriptListener(hook);
         }
     }
 
     public void deleteScriptListener(ScriptName name, ScriptListener hook) {
         if (null != hook && null != name) {
-            LibraryRecord record = cache.get(name);
-            if (null != record) {
-                record.deleteScriptListener(hook);
+            synchronized (this) {
+                LibraryRecord record = cache.get(name);
+                if (null != record) {
+                    record.deleteScriptListener(hook);
+                } else {
+                    final Set<ScriptListener> listeners = pendingScriptListeners.get(name);
+                    if (listeners != null) {
+                        listeners.remove(hook);
+                    }
+                }
             }
         }
     }
@@ -656,17 +670,38 @@ public class ScriptRegistryImpl implements ScriptRegistry, ScriptEngineFactoryOb
     public void addSourceUnit(SourceUnit unit) throws ScriptException {
         try {
             if (unit instanceof ScriptSource) {
-                // Cheap: avoid the synchronized block
-                LibraryRecord record = new LibraryRecord(unit.getName());
-                LibraryRecord cacheRecord = cache.putIfAbsent(unit.getName(), record);
-                if (null == cacheRecord) {
-                    cacheRecord = record;
+                LibraryRecord cacheRecord = cache.get(unit.getName());
+                if (cacheRecord == null) {
+                    cacheRecord = new LibraryRecord(unit.getName());
                 }
                 if (null == cacheRecord.getScriptSource()
                         || !cacheRecord.getScriptSource().getName().getRevision().equalsIgnoreCase(
                         unit.getName().getRevision())) {
-                    // Expensive: compile the source
-                    cacheRecord.setScriptSource((ScriptSource) unit);
+                    // compile the source and add it to cache
+                    synchronized (this) {
+                        // add any unregistered listeners to the cached copy only
+                        boolean listenersAdded = false;
+                        final Set<ScriptListener> scriptListeners = pendingScriptListeners.remove(unit.getName());
+                        if (scriptListeners != null) {
+                            for (final ScriptListener listener : scriptListeners) {
+                                cacheRecord.addScriptListener(listener);
+                                listenersAdded = true;
+                            }
+                        }
+                        try {
+                            cacheRecord.setScriptSource((ScriptSource) unit);
+                        } catch (final Exception e) {
+                            if (listenersAdded) {
+                                // compilation failed, so add listeners back to pendingScriptListeners
+                                pendingScriptListeners.put(unit.getName(), scriptListeners);
+                            }
+                            throw e;
+                        }
+                        if (cache.putIfAbsent(unit.getName(), cacheRecord) != null && listenersAdded) {
+                            // pendingScriptListeners should be emptied by the first thread in the synchronized block
+                            throw new IllegalStateException("Unexpected that pendingScriptListeners added");
+                        }
+                    }
                 }
             } else if (unit instanceof SourceContainer) {
                 SourceContainer container = (SourceContainer) unit;

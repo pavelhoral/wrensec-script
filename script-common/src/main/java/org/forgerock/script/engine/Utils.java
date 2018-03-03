@@ -1,36 +1,29 @@
 /*
- * DO NOT REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * The contents of this file are subject to the terms of the Common Development and
+ * Distribution License (the License). You may not use this file except in compliance with the
+ * License.
  *
- * Copyright (c) 2012-2013 ForgeRock AS. All rights reserved.
+ * You can obtain a copy of the License at legal/CDDLv1.0.txt. See the License for the
+ * specific language governing permission and limitations under the License.
  *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License). You may not use this file except in
- * compliance with the License.
+ * When distributing Covered Software, include this CDDL Header Notice in each file and include
+ * the License file at legal/CDDLv1.0.txt. If applicable, add the following below the CDDL
+ * Header, with the fields enclosed by brackets [] replaced by your own identifying
+ * information: "Portions copyright [year] [name of copyright owner]".
  *
- * You can obtain a copy of the License at
- * http://forgerock.org/license/CDDLv1.0.html
- * See the License for the specific language governing
- * permission and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at http://forgerock.org/license/CDDLv1.0.html
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * your own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
+ * Copyright 2012-2016 ForgeRock AS.
  */
-
 package org.forgerock.script.engine;
 
-import org.apache.commons.lang3.tuple.Pair;
+import static org.forgerock.json.resource.ResourceException.newResourceException;
+
 import org.forgerock.services.context.Context;
 import org.forgerock.json.JsonPointer;
 import org.forgerock.json.JsonValue;
 import org.forgerock.json.JsonValueException;
 import org.forgerock.json.resource.ResourceException;
 import org.forgerock.json.resource.ServiceUnavailableException;
+import org.forgerock.util.Pair;
 import org.forgerock.script.Script;
 import org.forgerock.script.ScriptEntry;
 import org.forgerock.script.exception.ScriptThrownException;
@@ -178,8 +171,8 @@ public class Utils {
         Iterator<Pair<Object, Object>> i = valueStack.iterator();
         while (i.hasNext()) {
             Pair<Object, Object> next = i.next();
-            if (next.getLeft() == source) {
-                return next.getRight();
+            if (next.getFirst() == source) {
+                return next.getSecond();
             }
         }
 
@@ -218,10 +211,10 @@ public class Utils {
     public static Object evaluateScript(final Context context,
             final Pair<JsonPointer, ScriptEntry> scriptPair) throws ResourceException {
         if (scriptPair != null) {
-            ScriptEntry scriptEntry = scriptPair.getRight();
+            ScriptEntry scriptEntry = scriptPair.getSecond();
             if (scriptEntry.isActive()) {
                 throw new ServiceUnavailableException("Failed to execute inactive script: "
-                        + scriptPair.getRight().getName());
+                        + scriptPair.getSecond().getName());
             }
             Script script = scriptEntry.getScript(context);
             try {
@@ -258,6 +251,6 @@ public class Utils {
         } catch (final Throwable tmp) {
             resourceResultCode = ResourceException.INTERNAL_ERROR;
         }
-        return ResourceException.getException(resourceResultCode, t.getMessage(), t);
+        return newResourceException(resourceResultCode, t.getMessage(), t);
     }
 }

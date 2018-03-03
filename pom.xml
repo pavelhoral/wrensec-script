@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ DO NOT REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-  ~
-  ~ Copyright (c) 2012-2015 ForgeRock AS. All rights reserved.
-  ~
   ~ The contents of this file are subject to the terms
   ~ of the Common Development and Distribution License
   ~ (the License). You may not use this file except in
@@ -21,6 +17,8 @@
   ~ with the fields enclosed by brackets [] replaced by
   ~ your own identifying information:
   ~ "Portions Copyrighted [year] [name of copyright owner]"
+  ~
+  ~ Copyright 2012-2016 ForgeRock AS.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -31,7 +29,7 @@
     </parent>
     <groupId>org.forgerock.commons</groupId>
     <artifactId>forgerock-script</artifactId>
-    <version>3.0.3</version>
+    <version>4.2.0</version>
     <packaging>pom</packaging>
     <name>ForgeRock Script Parent</name>
     <description>The Script libraries supports a common implementation of various scripting languages to use the JSON
@@ -63,7 +61,7 @@
         <connection>scm:git:ssh://git@stash.forgerock.org:7999/commons/forgerock-script.git</connection>
         <developerConnection>scm:git:ssh://git@stash.forgerock.org:7999/commons/forgerock-script.git</developerConnection>
         <url>http://stash.forgerock.org/projects/COMMONS/repos/forgerock-script/browse</url>
-      <tag>3.0.3</tag>
+      <tag>4.2.0</tag>
   </scm>
     <distributionManagement>
         <site>
@@ -106,7 +104,7 @@
         </siteDistributionURL>
 
         <!-- Commons forgerock-rest versions -->
-        <commons.forgerock-bom.version>4.0.0</commons.forgerock-bom.version>
+        <commons.commons-bom.version>21.0.0-alpha-17</commons.commons-bom.version>
 
         <!--<commons.script.osgi.import.default.version>-->
         <!--[$(version;==;$(@)),$(version;+;$(@)))-->
@@ -140,8 +138,8 @@
             -->
             <dependency>
                 <groupId>org.forgerock.commons</groupId>
-                <artifactId>forgerock-bom</artifactId>
-                <version>${commons.forgerock-bom.version}</version>
+                <artifactId>commons-bom</artifactId>
+                <version>${commons.commons-bom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -153,13 +151,6 @@
                 <artifactId>org.osgi.core</artifactId>
                 <version>4.3.1</version>
                 <scope>provided</scope>
-            </dependency>
-
-            <!-- Test Dependencies -->
-            <dependency>
-                <groupId>org.easytesting</groupId>
-                <artifactId>fest-assert-core</artifactId>
-                <version>2.0M10</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

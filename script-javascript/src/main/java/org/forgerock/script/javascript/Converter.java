@@ -1,25 +1,17 @@
 /*
- * DO NOT REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * The contents of this file are subject to the terms of the Common Development and
+ * Distribution License (the License). You may not use this file except in compliance with the
+ * License.
  *
- * Copyright (c) 2012-2014 ForgeRock AS. All rights reserved.
+ * You can obtain a copy of the License at legal/CDDLv1.0.txt. See the License for the
+ * specific language governing permission and limitations under the License.
  *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License). You may not use this file except in
- * compliance with the License.
+ * When distributing Covered Software, include this CDDL Header Notice in each file and include
+ * the License file at legal/CDDLv1.0.txt. If applicable, add the following below the CDDL
+ * Header, with the fields enclosed by brackets [] replaced by your own identifying
+ * information: "Portions copyright [year] [name of copyright owner]".
  *
- * You can obtain a copy of the License at
- * http://forgerock.org/license/CDDLv1.0.html
- * See the License for the specific language governing
- * permission and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at http://forgerock.org/license/CDDLv1.0.html
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * your own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
+ * Copyright 2012-2016 ForgeRock AS.
  */
 
 package org.forgerock.script.javascript;
@@ -32,12 +24,16 @@ import java.util.Map;
 import org.forgerock.json.JsonPointer;
 import org.forgerock.json.JsonValue;
 import org.forgerock.json.resource.ActionRequest;
+import org.forgerock.json.resource.ActionResponse;
 import org.forgerock.json.resource.CreateRequest;
 import org.forgerock.json.resource.DeleteRequest;
 import org.forgerock.json.resource.PatchRequest;
 import org.forgerock.json.resource.QueryRequest;
+import org.forgerock.json.resource.QueryResponse;
 import org.forgerock.json.resource.ReadRequest;
 import org.forgerock.json.resource.Request;
+import org.forgerock.json.resource.ResourceResponse;
+import org.forgerock.json.resource.Response;
 import org.forgerock.json.resource.UpdateRequest;
 import org.forgerock.script.scope.AbstractFactory;
 import org.forgerock.script.scope.Function;
@@ -113,8 +109,10 @@ class Converter {
             return wrap(parameter, value.toString(), scope, doCopy);
         } else if (value instanceof Request) {
             return wrap(parameter, (Request) value, scope);
+        } else if (value instanceof Response) {
+            return wrap(parameter, (Response) value, scope);
         } else if (value instanceof org.forgerock.services.context.Context) {
-           return wrap(parameter, (org.forgerock.services.context.Context) value, scope);
+            return wrap(parameter, (org.forgerock.services.context.Context) value, scope);
         } else {
             return Context.javaToJS(value, scope);
         }
@@ -166,34 +164,47 @@ class Converter {
             ScriptableCreateRequest result = new ScriptableCreateRequest(parameter, (CreateRequest) value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
-        }
-        else if (value instanceof DeleteRequest) {
+        } else if (value instanceof DeleteRequest) {
             ScriptableDeleteRequest result = new ScriptableDeleteRequest(parameter, (DeleteRequest) value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
-        }
-        else if (value instanceof PatchRequest) {
+        } else if (value instanceof PatchRequest) {
             ScriptablePatchRequest result = new ScriptablePatchRequest(parameter, (PatchRequest) value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
-        }
-        else if (value instanceof QueryRequest) {
+        } else if (value instanceof QueryRequest) {
             ScriptableQueryRequest result = new ScriptableQueryRequest(parameter, (QueryRequest) value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
-        }
-        else if (value instanceof ReadRequest) {
+        } else if (value instanceof ReadRequest) {
             ScriptableReadRequest result = new ScriptableReadRequest(parameter, (ReadRequest) value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
-        }
-        else if (value instanceof UpdateRequest) {
+        } else if (value instanceof UpdateRequest) {
             ScriptableUpdateRequest result = new ScriptableUpdateRequest(parameter, (UpdateRequest) value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
-        }
-        else if (value instanceof ActionRequest) {
+        } else if (value instanceof ActionRequest) {
             ScriptableActionRequest result = new ScriptableActionRequest(parameter, (ActionRequest) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        } else {
+            // we shouldn't get here...
+            return Context.javaToJS(value, scope);
+        }
+    }
+
+    public static final Object wrap(final Parameter parameter, final Response value, final Scriptable scope) {
+        if (value instanceof ActionResponse) {
+            ScriptableActionResponse result = new ScriptableActionResponse(parameter, (ActionResponse) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        } else if (value instanceof ResourceResponse) {
+            ScriptableResourceResponse result = new ScriptableResourceResponse(parameter, (ResourceResponse) value);
+            ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
+            return result;
+        } else if (value instanceof QueryResponse) {
+            ScriptableQueryResponse result = new ScriptableQueryResponse(parameter, (QueryResponse) value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
         } else {
