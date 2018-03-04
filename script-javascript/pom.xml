@@ -62,16 +62,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.wst.jsdt.debug</groupId>
-            <artifactId>rhino.debugger</artifactId>
+            <groupId>org.eclipse.wst.jsdt</groupId>
+            <artifactId>org.eclipse.wst.jsdt.debug.rhino.debugger</artifactId>
             <version>1.0.300.v201109150503</version>
-            <!--scope>provided</scope-->
             <optional>true</optional>
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.wst.jsdt.debug</groupId>
-            <artifactId>transport</artifactId>
+            <groupId>org.eclipse.wst.jsdt</groupId>
+            <artifactId>org.eclipse.wst.jsdt.debug.transport</artifactId>
             <version>1.0.100.v201109150330</version>
             <optional>true</optional>
         </dependency>
