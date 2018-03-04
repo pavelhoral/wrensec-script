@@ -97,7 +97,7 @@ public interface CompilationHandler {
      * 
      * <p>
      * A script is in the {@code STOPPING} state when its {@link #ACTIVE} state
-     * is active. A script must be in this state when the script's {@link @link
+     * is active. A script must be in this state when the script's {@link
      * ScriptEngine#compileScript(CompilationHandler)} method is called.
      * <p>
      * When the {@code ScriptEngine.compileScript} method completes the script

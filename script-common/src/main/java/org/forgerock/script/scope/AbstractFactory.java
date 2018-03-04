@@ -50,9 +50,9 @@ public abstract class AbstractFactory<T> implements Factory<T> {
 
     /**
      * Gets the {@code null} object representation.
-     * <p/>
-     * If the {@code null} object has special representation in the script scope
-     * this method returns with that object.
+     *
+     * <p>If the {@code null} object has special representation in the script
+     * scope this method returns with that object.
      *
      * @return {@code null} or representation of {@code null} object.
      */

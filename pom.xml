@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ DO NOT REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-  ~
-  ~ Copyright (c) 2012-2015 ForgeRock AS. All rights reserved.
-  ~
   ~ The contents of this file are subject to the terms
   ~ of the Common Development and Distribution License
   ~ (the License). You may not use this file except in
@@ -21,96 +17,103 @@
   ~ with the fields enclosed by brackets [] replaced by
   ~ your own identifying information:
   ~ "Portions Copyrighted [year] [name of copyright owner]"
+  ~
+  ~ Copyright 2012-2016 ForgeRock AS.
+  ~ Portions Copyright 2018 Wren Security.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.forgerock</groupId>
         <artifactId>forgerock-parent</artifactId>
         <version>2.0.2</version>
     </parent>
+
     <groupId>org.forgerock.commons</groupId>
     <artifactId>forgerock-script</artifactId>
-    <version>3.0.3</version>
+    <version>4.2.0</version>
     <packaging>pom</packaging>
-    <name>ForgeRock Script Parent</name>
-    <description>The Script libraries supports a common implementation of various scripting languages to use the JSON
-        Resource core library
+
+    <name>Wren Security Script Parent</name>
+
+    <description>
+        Libraries that provide a common interface for different scripting languages to use the
+        Wren Security JSON Resource core library.
     </description>
-    <inceptionYear>2012</inceptionYear>
-    <url>http://www.forgerock.org</url>
+
+    <inceptionYear>2017</inceptionYear>
+    <url>https://github.com/WrenSecurity/wrensec-script</url>
+
     <licenses>
         <license>
             <name>CDDL-1.0</name>
             <url>http://www.opensource.org/licenses/CDDL-1.0</url>
+
             <comments>Common Development and Distribution License (CDDL) 1.0.
                 This license applies to OpenIDM source code as indicated in the
                 source code.
             </comments>
+
             <distribution>repo</distribution>
         </license>
+
         <license>
             <name>CC BY-NC-ND 3.0</name>
             <url>http://creativecommons.org/licenses/by-nc-nd/3.0/</url>
+
             <comments>Creative Commons Attribution-NonCommercial-NoDerivs 3.0
                 Unported. This license applies to the site content, and to the
                 documentation as indicated in the documentation source code.
             </comments>
+
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <scm>
-        <connection>scm:git:ssh://git@stash.forgerock.org:7999/commons/forgerock-script.git</connection>
-        <developerConnection>scm:git:ssh://git@stash.forgerock.org:7999/commons/forgerock-script.git</developerConnection>
-        <url>http://stash.forgerock.org/projects/COMMONS/repos/forgerock-script/browse</url>
-      <tag>3.0.3</tag>
-  </scm>
-    <distributionManagement>
-        <site>
-            <id>community.internal.forgerock.com</id>
-            <name>ForgeRock Community Server</name>
-            <url>${siteDistributionURL}</url>
-        </site>
-    </distributionManagement>
 
-    <!-- NOT ALLOWED: (see FAQ at http://maven.apache.org/guides/mini/guide-central-repository-upload.html ) -->
+    <scm>
+        <url>https://github.com/WrenSecurity/wrensec-script</url>
+        <connection>scm:git:git://github.com/WrenSecurity/wrensec-script.git</connection>
+        <developerConnection>scm:git:git@github.com:WrenSecurity/wrensec-script.git</developerConnection>
+    </scm>
+
     <repositories>
+        <!-- Needed to retrieve parent POM -->
         <repository>
-            <id>forgerock-staging-repository</id>
-            <name>ForgeRock Release Repository</name>
-            <url>http://maven.forgerock.org/repo/releases</url>
+            <id>wrensecurity-releases</id>
+            <name>Wren Security Release Repository</name>
+            <url>https://wrensecurity.jfrog.io/wrensecurity/releases</url>
+
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>
-        <repository>
-            <id>forgerock-snapshots-repository</id>
-            <name>ForgeRock Snapshot Repository</name>
-            <url>http://maven.forgerock.org/repo/snapshots</url>
+
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
         </repository>
     </repositories>
 
+    <mailingLists>
+        <mailingList>
+            <name>Wren Security Mailing List</name>
+            <archive>https://groups.google.com/forum/#!forum/wren-security</archive>
+            <subscribe>https://groups.google.com/forum/#!forum/wren-security</subscribe>
+            <unsubscribe>https://groups.google.com/forum/#!forum/wren-security</unsubscribe>
+            <post>wren-security@googlegroups.com</post>
+        </mailingList>
+    </mailingLists>
 
     <issueManagement>
-        <system>jira</system>
-        <url>https://bugster.forgerock.org/jira/browse/OPENIDM</url>
+        <system>GitHub Issues</system>
+        <url>https://github.com/WrenSecurity/wrensec-script/issues</url>
     </issueManagement>
 
-
     <properties>
-        <!-- Documentation and site properties -->
-        <siteDistributionURL>scp://community.internal.forgerock.com/var/www/vhosts/commons.forgerock.org/httpdocs/forgerock-script
-        </siteDistributionURL>
-
         <!-- Commons forgerock-rest versions -->
-        <commons.forgerock-bom.version>4.0.0</commons.forgerock-bom.version>
-
-        <!--<commons.script.osgi.import.default.version>-->
-        <!--[$(version;==;$(@)),$(version;+;$(@)))-->
-        <!--</commons.script.osgi.import.default.version>-->
+        <commons.commons-bom.version>21.0.0-alpha-17</commons.commons-bom.version>
 
         <commons.script.osgi.import.before.defaults />
         <commons.script.osgi.import.defaults />
@@ -133,15 +136,10 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--
-                mvn versions:display-plugin-updates
-                mvn versions:display-dependency-updates
-                mvn versions:use-latest-versions
-            -->
             <dependency>
                 <groupId>org.forgerock.commons</groupId>
-                <artifactId>forgerock-bom</artifactId>
-                <version>${commons.forgerock-bom.version}</version>
+                <artifactId>commons-bom</artifactId>
+                <version>${commons.commons-bom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -154,13 +152,6 @@
                 <version>4.3.1</version>
                 <scope>provided</scope>
             </dependency>
-
-            <!-- Test Dependencies -->
-            <dependency>
-                <groupId>org.easytesting</groupId>
-                <artifactId>fest-assert-core</artifactId>
-                <version>2.0M10</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -171,6 +162,7 @@
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>2.4.0</version>
+
                     <configuration>
                         <instructions>
                             <Import-Package>${commons.script.osgi.import}</Import-Package>
@@ -180,30 +172,38 @@
                         </instructions>
                     </configuration>
                 </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
+
                     <configuration>
                         <author>false</author>
+
                         <links>
                             <!-- http://docs.oracle.com/javase/6/docs/api/package-list -->
                             <link>http://docs.oracle.com/javase/6/docs/api</link>
                         </links>
                     </configuration>
+
                     <executions>
                         <execution>
                             <id>attach-javadocs</id>
+
                             <goals>
                                 <goal>jar</goal>
                             </goals>
                         </execution>
                     </executions>
                 </plugin>
+
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
+
                     <executions>
                         <execution>
                             <id>attach-descriptor</id>
+
                             <goals>
                                 <goal>attach-descriptor</goal>
                             </goals>
@@ -213,37 +213,46 @@
             </plugins>
         </pluginManagement>
     </build>
+
     <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>2.3</version>
+
                 <configuration>
                     <aggregate>true</aggregate>
-                    <windowTitle>ForgeRock Common Script ${project.version} Reference</windowTitle>
+                    <windowTitle>Wren Security Common Script ${project.version} Reference</windowTitle>
                     <linkJavadoc>true</linkJavadoc>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9</version>
+
                 <configuration>
                     <author>false</author>
+
                     <links>
                         <link>http://docs.oracle.com/javase/6/docs/api</link>
                     </links>
                 </configuration>
+
                 <reportSets>
                     <reportSet>
                         <id>default</id>
+
                         <reports>
                             <report>javadoc</report>
                         </reports>
                     </reportSet>
+
                     <reportSet>
                         <id>aggregate</id>
+
                         <reports>
                             <report>aggregate</report>
                         </reports>
@@ -256,28 +265,34 @@
     <profiles>
         <profile>
             <id>jrebel</id>
+
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.zeroturnaround</groupId>
                         <artifactId>jrebel-maven-plugin</artifactId>
                         <version>1.1.3</version>
+
                         <configuration>
                             <packaging>jar</packaging>
                         </configuration>
+
                         <executions>
                             <execution>
                                 <id>generate-rebel-xml</id>
                                 <phase>process-resources</phase>
+
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
                             </execution>
                         </executions>
                     </plugin>
+
                     <plugin>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>maven-bundle-plugin</artifactId>
+
                         <configuration>
                             <instructions>
                                 <Include-Resource>{maven-resources},target/classes/rebel.xml</Include-Resource>

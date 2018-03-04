@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ DO NOT REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-  ~
-  ~ Copyright (c) 2012-2013 ForgeRock AS. All rights reserved.
-  ~
   ~ The contents of this file are subject to the terms
   ~ of the Common Development and Distribution License
   ~ (the License). You may not use this file except in
@@ -21,17 +17,25 @@
   ~ with the fields enclosed by brackets [] replaced by
   ~ your own identifying information:
   ~ "Portions Copyrighted [year] [name of copyright owner]"
+  ~
+  ~ Copyright 2012-2016 ForgeRock AS.
+  ~ Portions Copyright 2018 Wren Security.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.forgerock.commons</groupId>
         <artifactId>forgerock-script</artifactId>
-        <version>3.0.3</version>
+        <version>4.2.0</version>
     </parent>
+
     <artifactId>script-groovy</artifactId>
     <packaging>bundle</packaging>
-    <name>ForgeRock Script - Groovy</name>
+
+    <name>Wren Security Script - Groovy</name>
 
     <properties>
         <commons.script.osgi.import.defaults>
@@ -40,12 +44,6 @@
     </properties>
 
     <dependencies>
-        <!--
-            mvn versions:display-plugin-updates
-            mvn versions:display-dependency-updates
-            mvn versions:use-latest-versions
-        -->
-
         <!-- ForgeRock Commons -->
         <dependency>
             <groupId>org.forgerock.commons</groupId>
@@ -71,16 +69,19 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-assert-core</artifactId>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.forgerock.commons</groupId>
             <artifactId>script-common</artifactId>
@@ -88,29 +89,33 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
+
                 <configuration>
                     <instructions>
                         <Bundle-Activator>org.forgerock.script.groovy.internal.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
                 <version>1.5</version>
+
                 <executions>
                     <execution>
                         <goals>
@@ -119,6 +124,7 @@
                             <goal>generateTestStubs</goal>
                             <goal>testCompile</goal>
                         </goals>
+
                         <configuration>
                             <providerSelection>2.0</providerSelection>
                         </configuration>

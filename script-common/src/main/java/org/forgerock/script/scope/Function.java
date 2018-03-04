@@ -42,8 +42,6 @@ public interface Function<R> extends Serializable {
      * @param callback
      * @param arguments could be a single value or a List of values
      * @return computed result
-     * @throws Exception
-     *             if unable to compute a result
      * @throws ResourceException
      * @throws NoSuchMethodException
      */

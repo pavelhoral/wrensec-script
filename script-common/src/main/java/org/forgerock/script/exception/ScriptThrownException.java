@@ -1,25 +1,17 @@
 /*
- * DO NOT REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * The contents of this file are subject to the terms of the Common Development and
+ * Distribution License (the License). You may not use this file except in compliance with the
+ * License.
  *
- * Copyright (c) 2012-2013 ForgeRock AS. All rights reserved.
+ * You can obtain a copy of the License at legal/CDDLv1.0.txt. See the License for the
+ * specific language governing permission and limitations under the License.
  *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License). You may not use this file except in
- * compliance with the License.
+ * When distributing Covered Software, include this CDDL Header Notice in each file and include
+ * the License file at legal/CDDLv1.0.txt. If applicable, add the following below the CDDL
+ * Header, with the fields enclosed by brackets [] replaced by your own identifying
+ * information: "Portions copyright [year] [name of copyright owner]".
  *
- * You can obtain a copy of the License at
- * http://forgerock.org/license/CDDLv1.0.html
- * See the License for the specific language governing
- * permission and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at http://forgerock.org/license/CDDLv1.0.html
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * your own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
+ * Copyright 2012-2016 ForgeRock AS.
  */
 
 package org.forgerock.script.exception;
@@ -33,7 +25,7 @@ import java.util.Map;
 import static org.forgerock.json.resource.ResourceException.FIELD_CODE;
 import static org.forgerock.json.resource.ResourceException.FIELD_DETAIL;
 import static org.forgerock.json.resource.ResourceException.FIELD_MESSAGE;
-import static org.forgerock.json.resource.ResourceException.getException;
+import static org.forgerock.json.resource.ResourceException.newResourceException;
 
 /**
  * An exception that is thrown to indicate that an executed script encountered
@@ -62,11 +54,6 @@ public class ScriptThrownException extends ScriptException {
      */
     public ScriptThrownException(Exception e, Object value) {
         super(e);
-        this.value = value;
-    }
-
-    public ScriptThrownException(String message, String fileName, int lineNumber, Object value) {
-        super(message, fileName, lineNumber);
         this.value = value;
     }
 
@@ -129,22 +116,20 @@ public class ScriptThrownException extends ScriptException {
                 if (throwable == null) {
                     throwable = this;
                 }
-                return getException(openidmCode.intValue(), message, throwable).setDetail(
-                        failureDetail);
-
+                return newResourceException(openidmCode, message, throwable).setDetail(failureDetail);
             }
         }
         if (defaultMsg != null) {
-            return getException(defaultCode, defaultMsg, this);
+            return newResourceException(defaultCode, defaultMsg, this);
         } else if (value == null) {
-            return getException(defaultCode, null, this);
+            return newResourceException(defaultCode, null, this);
         } else {
-            return getException(defaultCode, String.valueOf(value), this);
+            return newResourceException(defaultCode, String.valueOf(value), this);
         }
     }
 
     @Override
     public String toString() {
-        return super.toString() + " " + getValue().toString();
+        return super.toString() + (getValue() != null ? " " + getValue().toString() : null);
     }
 }

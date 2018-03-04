@@ -38,7 +38,6 @@ public interface CompiledScript {
 
     /**
      * Evaluated the script stored in this {@code CompiledScript} object.
-     * <p/>
      *
      * @param context
      *            A {@code context} associated with the
