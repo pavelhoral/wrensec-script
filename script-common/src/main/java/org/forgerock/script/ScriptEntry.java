@@ -87,8 +87,8 @@ public interface ScriptEntry extends Scope {
 
     /**
      * Returns <tt>true</tt> if this script can be evaluated.
-     * <p/>
-     * This method checks the availability of the required
+     *
+     * <p>This method checks the availability of the required
      * {@link org.forgerock.script.engine.ScriptEngine} and the
      * {@link org.forgerock.script.source.SourceUnit}.
      *

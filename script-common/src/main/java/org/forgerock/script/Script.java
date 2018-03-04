@@ -40,9 +40,9 @@ public interface Script extends Scope {
      * a Thread-Safe Java Language Binding to be used in the execution of
      * scripts or be used in some other way, depending on whether the key is
      * reserved.
-     * <p/>
-     * The {@link org.forgerock.script.Scope#put(String, Object)} suppress the
-     * value with the same key.
+     *
+     * <p>The {@link org.forgerock.script.Scope#put(String, Object)} replaces
+     * any value with the same key.
      * 
      * 
      * @param key

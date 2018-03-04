@@ -125,7 +125,6 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
         this.errorWriter = writer;
     }
 
-    /** {@inheritDoc  */
     // public Map<String, Object> compileBindings(final Context context,
     // final Map<String, Object> request, Map<String, Object>... scopes) {
 
@@ -162,7 +161,6 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
     // return new SimpleBindings(new JsonValueMap(requestScope));
     // }
 
-    /** {@inheritDoc  */
     public Object compileObject(final Context context, Object value) {
         // JsonValue temp = new JsonValue(value);
         // temp.getTransformers().add(getOperationParameter(context));
@@ -174,9 +172,9 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
 
     /**
      * Gets the {@code null} object representation.
-     * <p/>
-     * If the {@code null} object has special representation in the script scope
-     * this method returns with that object.
+     *
+     * <p>If the {@code null} object has special representation in the script
+     * scope this method returns with that object.
      *
      * @return {@code null} or representation of {@code null} object.
      */

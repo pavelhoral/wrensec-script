@@ -26,8 +26,8 @@ package org.forgerock.script;
 
 /**
  * A ScriptName identifies a {@code Script} object.
- * <p/>
- * Simple name can not identify a file in a Directory.
+ *
+ * <p>Simple name can not identify a file in a Directory.
  *
  * @author Laszlo Hordos
  */

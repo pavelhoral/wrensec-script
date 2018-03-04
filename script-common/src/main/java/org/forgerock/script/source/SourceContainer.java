@@ -28,8 +28,8 @@ import org.forgerock.script.ScriptName;
 
 /**
  * A SourceContainer represent the collection of script source.
- * <p/>
- * The implementation can fetch the {@code ScriptSource} from a directory, a
+ *
+ * <p>The implementation can fetch the {@code ScriptSource} from a directory, a
  * bundle(jar) or any other container.
  * 
  * @author Laszlo Hordos
