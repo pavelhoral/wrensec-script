@@ -113,7 +113,7 @@
 
     <properties>
         <!-- Commons forgerock-rest versions -->
-        <commons.commons-bom.version>21.0.0-alpha-17</commons.commons-bom.version>
+        <commons.commons-bom.version>22.0.0</commons.commons-bom.version>
 
         <commons.script.osgi.import.before.defaults />
         <commons.script.osgi.import.defaults />
