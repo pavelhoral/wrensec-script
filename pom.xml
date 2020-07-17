@@ -111,6 +111,7 @@
     </issueManagement>
 
     <properties>
+        <pgpWhitelistArtifact>org.wrensecurity:wrensec-pgp-whitelist:1.4.3</pgpWhitelistArtifact>
         <!-- Commons forgerock-rest versions -->
         <commons.commons-bom.version>22.0.0</commons.commons-bom.version>
 
