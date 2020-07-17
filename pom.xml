@@ -32,7 +32,7 @@
 
     <groupId>org.forgerock.commons</groupId>
     <artifactId>forgerock-script</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Wren Security Script Parent</name>
@@ -75,7 +75,7 @@
         <url>https://github.com/WrenSecurity/wrensec-script</url>
         <connection>scm:git:git://github.com/WrenSecurity/wrensec-script.git</connection>
         <developerConnection>scm:git:git@github.com:WrenSecurity/wrensec-script.git</developerConnection>
-      <tag>sustaining/4.3.x</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <repositories>
