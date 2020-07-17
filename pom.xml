@@ -75,7 +75,8 @@
         <url>https://github.com/WrenSecurity/wrensec-script</url>
         <connection>scm:git:git://github.com/WrenSecurity/wrensec-script.git</connection>
         <developerConnection>scm:git:git@github.com:WrenSecurity/wrensec-script.git</developerConnection>
-    </scm>
+      <tag>sustaining/4.3.x</tag>
+  </scm>
 
     <repositories>
         <!-- Needed to retrieve parent POM -->
