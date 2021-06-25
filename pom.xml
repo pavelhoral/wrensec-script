@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.wrensecurity</groupId>
         <artifactId>wrensec-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.2.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.forgerock.commons</groupId>
@@ -91,6 +91,21 @@
 
             <releases>
                 <enabled>true</enabled>
+            </releases>
+        </repository>
+
+        <!-- Needed to retrieve parent POM -->
+        <repository>
+            <id>wrensecurity-snapshots</id>
+            <name>Wren Security Snapshot Repository</name>
+            <url>https://wrensecurity.jfrog.io/wrensecurity/snapshots</url>
+
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+
+            <releases>
+                <enabled>false</enabled>
             </releases>
         </repository>
     </repositories>
