@@ -76,6 +76,8 @@ class ScriptableQueryRequest extends AbstractScriptableRequest implements Wrappe
             return Converter.wrap(parameter, request.getQueryId(), start, false);
         } else if (QueryRequest.FIELD_SORT_KEYS.equals(name)) {
             return Converter.wrap(parameter, request.getSortKeys(), start, false);
+        } else if (QueryRequest.FIELD_TOTAL_PAGED_RESULTS_POLICY.equals(name)) {
+            return Converter.wrap(parameter, request.getTotalPagedResultsPolicy(), start, false);
         } else {
             return super.get(name, start);
         }
@@ -90,6 +92,7 @@ class ScriptableQueryRequest extends AbstractScriptableRequest implements Wrappe
                 || QueryRequest.FIELD_QUERY_FILTER.equals(name)
                 || QueryRequest.FIELD_QUERY_ID.equals(name)
                 || QueryRequest.FIELD_SORT_KEYS.equals(name)
+                || QueryRequest.FIELD_TOTAL_PAGED_RESULTS_POLICY.equals(name)
                 || super.has(name, start);
     }
 
@@ -110,7 +113,8 @@ class ScriptableQueryRequest extends AbstractScriptableRequest implements Wrappe
             QueryRequest.FIELD_QUERY_EXPRESSION,
             QueryRequest.FIELD_QUERY_FILTER,
             QueryRequest.FIELD_QUERY_ID,
-            QueryRequest.FIELD_SORT_KEYS);
+            QueryRequest.FIELD_SORT_KEYS,
+            QueryRequest.FIELD_TOTAL_PAGED_RESULTS_POLICY);
 
     @Override
     public Object[] getIds() {
