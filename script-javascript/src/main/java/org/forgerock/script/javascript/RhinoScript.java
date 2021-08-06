@@ -130,6 +130,7 @@ public class RhinoScript implements CompiledScript {
         this.engine = engine;
         this.requireBuilder = requireBuilder;
         Context cx = Context.enter();
+        cx.setLanguageVersion(Context.VERSION_ES6);
         try {
             scriptScope = getScriptScope(cx);
             script = compiledScript;
@@ -148,17 +149,7 @@ public class RhinoScript implements CompiledScript {
      * etc.) will be used for script execution; otherwise a new unsealed scope will be allocated for each execution.
      */
     public RhinoScript(String name, final RhinoScriptEngine engine, RequireBuilder requireBuilder, boolean sharedScope) {
-        this.scriptName = name;
-        this.sharedScope = sharedScope;
-        this.engine = engine;
-        this.requireBuilder = requireBuilder;
-        Context cx = Context.enter();
-        try {
-            scriptScope = getScriptScope(cx);
-            script = null;
-        } finally {
-            Context.exit();
-        }
+        this(name, null, engine, requireBuilder, sharedScope);
     }
 
     /**
@@ -243,6 +234,7 @@ public class RhinoScript implements CompiledScript {
             throws ScriptException {
 
         Context context = Context.enter();
+        context.setLanguageVersion(Context.VERSION_ES6);
         try {
             Scriptable outer = context.newObject(getStandardObjects(context));
 

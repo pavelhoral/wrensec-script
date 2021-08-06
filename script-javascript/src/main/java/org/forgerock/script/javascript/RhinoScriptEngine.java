@@ -237,6 +237,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
     private Script compileScript(String name, Reader scriptReader) throws ScriptCompilationException {
         Context cx = Context.enter();
+        cx.setLanguageVersion(Context.VERSION_ES6);
         try {
             return cx.compileReader(scriptReader, name, 1, null);
         } catch (IOException ioe) {
