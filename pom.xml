@@ -1,38 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ The contents of this file are subject to the terms
-  ~ of the Common Development and Distribution License
-  ~ (the License). You may not use this file except in
-  ~ compliance with the License.
-  ~
-  ~ You can obtain a copy of the License at
-  ~ http://forgerock.org/license/CDDLv1.0.html
-  ~ See the License for the specific language governing
-  ~ permission and limitations under the License.
-  ~
-  ~ When distributing Covered Code, include this CDDL
-  ~ Header Notice in each file and include the License file
-  ~ at http://forgerock.org/license/CDDLv1.0.html
-  ~ If applicable, add the following below the CDDL Header,
-  ~ with the fields enclosed by brackets [] replaced by
-  ~ your own identifying information:
-  ~ "Portions Copyrighted [year] [name of copyright owner]"
-  ~
-  ~ Copyright 2012-2016 ForgeRock AS.
-  ~ Portions Copyright 2018 Wren Security.
-  -->
+   The contents of this file are subject to the terms of the Common Development and
+   Distribution License (the License). You may not use this file except in compliance with the
+   License.
+
+   You can obtain a copy of the License at legal/CDDLv1.0.txt. See the License for the
+   specific language governing permission and limitations under the License.
+
+   When distributing Covered Software, include this CDDL Header Notice in each file and include
+   the License file at legal/CDDLv1.0.txt. If applicable, add the following below the CDDL
+   Header, with the fields enclosed by brackets [] replaced by your own identifying
+   information: "Portions copyright [year] [name of copyright owner]".
+
+   Copyright 2012-2016 ForgeRock AS.
+   Portions Copyright 2018-2021 Wren Security.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.wrensecurity</groupId>
         <artifactId>wrensec-parent</artifactId>
-        <version>3.2.1-SNAPSHOT</version>
+        <version>3.2.1</version>
     </parent>
 
     <groupId>org.forgerock.commons</groupId>
     <artifactId>forgerock-script</artifactId>
-    <version>4.5.0-SNAPSHOT</version>
+    <version>4.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Wren Security Script Parent</name>
@@ -49,24 +43,7 @@
         <license>
             <name>CDDL-1.0</name>
             <url>http://www.opensource.org/licenses/CDDL-1.0</url>
-
-            <comments>Common Development and Distribution License (CDDL) 1.0.
-                This license applies to OpenIDM source code as indicated in the
-                source code.
-            </comments>
-
-            <distribution>repo</distribution>
-        </license>
-
-        <license>
-            <name>CC BY-NC-ND 3.0</name>
-            <url>http://creativecommons.org/licenses/by-nc-nd/3.0/</url>
-
-            <comments>Creative Commons Attribution-NonCommercial-NoDerivs 3.0
-                Unported. This license applies to the site content, and to the
-                documentation as indicated in the documentation source code.
-            </comments>
-
+            <comments>Common Development and Distribution License (CDDL) 1.0.</comments>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -75,8 +52,8 @@
         <url>https://github.com/WrenSecurity/wrensec-script</url>
         <connection>scm:git:git://github.com/WrenSecurity/wrensec-script.git</connection>
         <developerConnection>scm:git:git@github.com:WrenSecurity/wrensec-script.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <repositories>
         <!-- Needed to retrieve parent POM -->
@@ -110,16 +87,6 @@
         </repository>
     </repositories>
 
-    <mailingLists>
-        <mailingList>
-            <name>Wren Security Mailing List</name>
-            <archive>https://groups.google.com/forum/#!forum/wren-security</archive>
-            <subscribe>https://groups.google.com/forum/#!forum/wren-security</subscribe>
-            <unsubscribe>https://groups.google.com/forum/#!forum/wren-security</unsubscribe>
-            <post>wren-security@googlegroups.com</post>
-        </mailingList>
-    </mailingLists>
-
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/WrenSecurity/wrensec-script/issues</url>
@@ -128,7 +95,7 @@
     <properties>
         <pgpWhitelistArtifact>org.wrensecurity:wrensec-pgp-whitelist:1.5.3</pgpWhitelistArtifact>
         <!-- Commons forgerock-rest versions -->
-        <commons.commons-bom.version>22.0.0</commons.commons-bom.version>
+        <commons.commons-bom.version>22.1.0</commons.commons-bom.version>
 
         <commons.script.osgi.import.before.defaults />
         <commons.script.osgi.import.defaults />
@@ -159,12 +126,10 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- Provided Dependencies -->
-            <!-- Core OSGi -->
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>4.3.1</version>
+                <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
         </dependencies>
@@ -176,7 +141,6 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.4.0</version>
 
                     <configuration>
                         <instructions>
@@ -187,44 +151,6 @@
                         </instructions>
                     </configuration>
                 </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-
-                    <configuration>
-                        <author>false</author>
-
-                        <links>
-                            <!-- http://docs.oracle.com/javase/6/docs/api/package-list -->
-                            <link>http://docs.oracle.com/javase/6/docs/api</link>
-                        </links>
-                    </configuration>
-
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
-
-                    <executions>
-                        <execution>
-                            <id>attach-descriptor</id>
-
-                            <goals>
-                                <goal>attach-descriptor</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -234,7 +160,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.0.0</version>
 
                 <configuration>
                     <aggregate>true</aggregate>
@@ -246,15 +172,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-
-                <configuration>
-                    <author>false</author>
-
-                    <links>
-                        <link>http://docs.oracle.com/javase/6/docs/api</link>
-                    </links>
-                </configuration>
+                <version>${javadocPluginVersion}</version>
 
                 <reportSets>
                     <reportSet>
@@ -276,46 +194,4 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <profiles>
-        <profile>
-            <id>jrebel</id>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.zeroturnaround</groupId>
-                        <artifactId>jrebel-maven-plugin</artifactId>
-                        <version>1.1.3</version>
-
-                        <configuration>
-                            <packaging>jar</packaging>
-                        </configuration>
-
-                        <executions>
-                            <execution>
-                                <id>generate-rebel-xml</id>
-                                <phase>process-resources</phase>
-
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>maven-bundle-plugin</artifactId>
-
-                        <configuration>
-                            <instructions>
-                                <Include-Resource>{maven-resources},target/classes/rebel.xml</Include-Resource>
-                            </instructions>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
