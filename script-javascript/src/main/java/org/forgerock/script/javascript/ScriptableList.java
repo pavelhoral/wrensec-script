@@ -22,14 +22,16 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Symbol;
+import org.mozilla.javascript.SymbolKey;
 import org.mozilla.javascript.TopLevel;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
 /**
  * Provides a {@code Scriptable} wrapper for a {@code List} object.
- * 
- * 
+ *
+ *
  * @author Paul C. Bryan
  */
 class ScriptableList extends IdScriptableObject implements Wrapper {
@@ -220,7 +222,7 @@ class ScriptableList extends IdScriptableObject implements Wrapper {
 
     /**
      * Constructs a new scriptable wrapper around the specified list.
-     * 
+     *
      * @param list
      *            the list to be wrapped.
      * @throws NullPointerException
@@ -362,6 +364,14 @@ class ScriptableList extends IdScriptableObject implements Wrapper {
          * if ("length".equals(name)) { return getLength(); } else { return
          * NOT_FOUND; }
          */
+    }
+
+    @Override
+    public Object get(Symbol name, Scriptable start) {
+        if (SymbolKey.IS_CONCAT_SPREADABLE.equals(name)) {
+            return true;
+        }
+        return super.get(name, start);
     }
 
     @Override
@@ -710,7 +720,7 @@ class ScriptableList extends IdScriptableObject implements Wrapper {
 
             /*
              * case Id_indexOf: return indexOfHelper(cx, thisObj, args, false);
-             * 
+             *
              * case Id_lastIndexOf: return indexOfHelper(cx, thisObj, args,
              * true); return ((NativeArray) thisObj).execIdCall(f, cx, this,
              * thisObj, args);
