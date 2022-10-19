@@ -21,10 +21,10 @@
     <parent>
         <groupId>org.wrensecurity</groupId>
         <artifactId>wrensec-parent</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.0</version>
     </parent>
 
-    <groupId>org.forgerock.commons</groupId>
+    <groupId>org.wrensecurity.commons</groupId>
     <artifactId>forgerock-script</artifactId>
     <version>4.4.2-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -93,9 +93,9 @@
     </issueManagement>
 
     <properties>
-        <pgpWhitelistArtifact>org.wrensecurity:wrensec-pgp-whitelist:1.5.3</pgpWhitelistArtifact>
+        <pgpWhitelistArtifact>org.wrensecurity:wrensec-pgp-whitelist:1.6.0</pgpWhitelistArtifact>
         <!-- Commons forgerock-rest versions -->
-        <commons.commons-bom.version>22.1.0</commons.commons-bom.version>
+        <commons.commons-bom.version>22.2.0</commons.commons-bom.version>
 
         <commons.script.osgi.import.before.defaults />
         <commons.script.osgi.import.defaults />
@@ -119,7 +119,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.forgerock.commons</groupId>
+                <groupId>org.wrensecurity.commons</groupId>
                 <artifactId>commons-bom</artifactId>
                 <version>${commons.commons-bom.version}</version>
                 <scope>import</scope>
