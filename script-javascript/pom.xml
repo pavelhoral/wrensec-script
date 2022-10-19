@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.rhino</artifactId>
-            <version>1.7.13_1</version>
+            <version>1.7.14_2</version>
         </dependency>
 
         <dependency>
