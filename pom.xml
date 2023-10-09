@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wrensecurity</groupId>
         <artifactId>wrensec-parent</artifactId>
-        <version>3.3.0</version>
+        <version>4.0.0</version>
     </parent>
 
     <groupId>org.wrensecurity.commons</groupId>
@@ -93,9 +93,9 @@
     </issueManagement>
 
     <properties>
-        <pgpWhitelistArtifact>org.wrensecurity:wrensec-pgp-whitelist:1.6.0</pgpWhitelistArtifact>
-        <!-- Commons forgerock-rest versions -->
-        <commons.commons-bom.version>22.2.0</commons.commons-bom.version>
+        <pgpVerifyKeysVersion>1.7.9</pgpVerifyKeysVersion>
+
+        <commons.commons-bom.version>22.6.0</commons.commons-bom.version>
 
         <commons.script.osgi.import.before.defaults />
         <commons.script.osgi.import.defaults />
