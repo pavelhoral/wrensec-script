@@ -26,7 +26,7 @@
 
     <groupId>org.wrensecurity.commons</groupId>
     <artifactId>forgerock-script</artifactId>
-    <version>4.6.0</version>
+    <version>4.6.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Wren Security Script Parent</name>
@@ -52,7 +52,7 @@
         <url>https://github.com/WrenSecurity/wrensec-script</url>
         <connection>scm:git:git://github.com/WrenSecurity/wrensec-script.git</connection>
         <developerConnection>scm:git:git@github.com:WrenSecurity/wrensec-script.git</developerConnection>
-        <tag>4.6.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
