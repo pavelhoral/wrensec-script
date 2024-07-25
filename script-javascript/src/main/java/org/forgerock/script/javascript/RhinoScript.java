@@ -108,6 +108,7 @@ public class RhinoScript implements CompiledScript {
      * Proxy class to avoid proliferation of anonymous classes.
      */
     private static class IProxy implements QuitAction {
+        @Override
         public void quit(Context cx, int exitCode) {
             /* no quit :) */
         }
@@ -224,6 +225,7 @@ public class RhinoScript implements CompiledScript {
         return name.indexOf("/") != -1 ? name.substring(name.lastIndexOf("/") + 1) : name;
     }
 
+    @Override
     public Bindings prepareBindings(org.forgerock.services.context.Context context, Bindings request, Bindings... scopes) {
         // TODO Fix it later
         return new SimpleBindings();
@@ -289,7 +291,7 @@ public class RhinoScript implements CompiledScript {
 
             // install require function per unofficial CommonJS author documentation
             // https://groups.google.com/d/msg/mozilla-rhino/HCMh_lAKiI4/P1MA3sFsNKQJ
-            requireBuilder.createRequire(context, inner).install(inner);
+            requireBuilder.createRequire(context, outer).install(inner);
 
             final Script scriptInstance = null != script ? script : engine.createScript(scriptName);
             Object result = Converter.convert(scriptInstance.exec(context, inner));
@@ -337,6 +339,7 @@ public class RhinoScript implements CompiledScript {
             super(parent);
         }
 
+        @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             // First check whether it's already been loaded, if so use it
             Class loadedClass = Kit.classOrNull(getParent(), name);
