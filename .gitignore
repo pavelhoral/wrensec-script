@@ -89,5 +89,9 @@ local.properties
 # sbteclipse plugin
 .target
 
+# TestNG
+*/test-output
+
 # TeXlipse plugin
 .texlipse
+
