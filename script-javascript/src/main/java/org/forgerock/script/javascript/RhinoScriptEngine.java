@@ -203,6 +203,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         throw new ScriptException("Script is not found:" + scriptName);
     }
 
+    @Override
     public void compileScript(CompilationHandler handler) throws ScriptException {
         try {
             boolean sharedScope = true;// config.get("sharedScope").defaultTo(true).asBoolean();
@@ -236,7 +237,19 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
     }
 
     private Script compileScript(String name, Reader scriptReader) throws ScriptCompilationException {
-        Context cx = Context.enter();
+        ContextFactory contextFactory = new ContextFactory() {
+            @Override
+            protected boolean hasFeature(Context cx, int featureIndex) {
+                switch (featureIndex) {
+                    case Context.FEATURE_ENABLE_JAVA_MAP_ACCESS:
+                        return true;
+                    default:
+                        return super.hasFeature(cx, featureIndex);
+                }
+            }
+        };
+
+        Context cx = contextFactory.enterContext();
         cx.setLanguageVersion(Context.VERSION_ES6);
         try {
             return cx.compileReader(scriptReader, name, 1, null);
@@ -256,6 +269,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
         }
     }
 
+    @Override
     public ScriptEngineFactory getFactory() {
         return factory;
     }

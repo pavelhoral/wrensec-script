@@ -43,6 +43,7 @@ import org.forgerock.script.scope.FunctionFactory;
 import org.forgerock.script.scope.OperationParameter;
 import org.forgerock.script.scope.Parameter;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Kit;
 import org.mozilla.javascript.RhinoException;
@@ -235,7 +236,19 @@ public class RhinoScript implements CompiledScript {
     public Object eval(final org.forgerock.services.context.Context ctx, Bindings request, Bindings... scopes)
             throws ScriptException {
 
-        Context context = Context.enter();
+        ContextFactory contextFactory = new ContextFactory() {
+            @Override
+            protected boolean hasFeature(Context cx, int featureIndex) {
+                switch (featureIndex) {
+                    case Context.FEATURE_ENABLE_JAVA_MAP_ACCESS:
+                        return true;
+                    default:
+                        return super.hasFeature(cx, featureIndex);
+                }
+            }
+        };
+
+        Context context = contextFactory.enterContext();
         context.setLanguageVersion(Context.VERSION_ES6);
         try {
             Scriptable outer = context.newObject(getStandardObjects(context));
