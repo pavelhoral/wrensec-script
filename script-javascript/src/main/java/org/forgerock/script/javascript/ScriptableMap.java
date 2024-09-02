@@ -24,6 +24,7 @@
 
 package org.forgerock.script.javascript;
 
+import java.util.Map;
 import org.forgerock.json.JsonValue;
 import org.forgerock.script.scope.AbstractFactory;
 import org.forgerock.script.scope.Parameter;
@@ -32,8 +33,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
-
-import java.util.Map;
 
 /**
  * Provides a {@code Scriptable} wrapper for a {@code Map} object.
@@ -82,7 +81,6 @@ class ScriptableMap extends NativeObject implements Wrapper {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object get(String name, Scriptable start) {
         if (map.containsKey(name)) {
             return Converter.wrap(parameter, map.get(name), start, map instanceof LazyMap);
@@ -162,6 +160,7 @@ class ScriptableMap extends NativeObject implements Wrapper {
         return map;
     }
 
+    @Override
     public String toString() {
         return map == null ? "null" : new JsonValue(map).toString();
     }

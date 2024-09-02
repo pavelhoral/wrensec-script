@@ -120,11 +120,11 @@ class Converter {
 
     public static final Object wrap(final Parameter parameter, final Map value, final Scriptable scope, boolean doCopy) {
         if (doCopy) {
-            ScriptableMap result = new ScriptableMap(getMap(parameter, (Map) value));
+            ScriptableMap result = new ScriptableMap(getMap(parameter, value));
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
         } else {
-            ScriptableMap result = new ScriptableMap(parameter, (Map) value);
+            ScriptableMap result = new ScriptableMap(parameter, value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Object);
             return result;
         }
@@ -132,18 +132,18 @@ class Converter {
 
     public static final Object wrap(final Parameter parameter, final List value, final Scriptable scope, boolean doCopy) {
         if (doCopy) {
-            ScriptableList result = new ScriptableList(getList(parameter, (List) value));
+            ScriptableList result = new ScriptableList(getList(parameter, value));
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Array);
             return result;
         } else {
-            ScriptableList result = new ScriptableList(parameter, (List) value);
+            ScriptableList result = new ScriptableList(parameter, value);
             ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Array);
             return result;
         }
     }
 
     public static final Object wrap(final Parameter parameter, final Function value, final Scriptable scope, boolean doCopy) {
-        ScriptableFunction result = new ScriptableFunction(parameter, (Function) value);
+        ScriptableFunction result = new ScriptableFunction(parameter, value);
         ScriptRuntime.setBuiltinProtoAndParent(result, scope, TopLevel.Builtins.Function);
         return result;
     }
@@ -223,7 +223,7 @@ class Converter {
      * Converts a value provided from JavaScript into a standard Java object.
      * Used when the script is attempting to assign a value to a supplied scope
      * or any properties/elements within. If the value is already suitable for
-     * such assignment, it is unknown whether it is suitable, it is returned 
+     * such assignment, it is unknown whether it is suitable, it is returned
      * unaltered.
      * <p>
      * <em> NOTE: If the value is not suitable, but not explicitly handled, it
@@ -231,7 +231,7 @@ class Converter {
      * method needs to be updated for objects requiring special handling.
      * </em>
      * <p>
-     * This method performs recursive conversion for any converted array 
+     * This method performs recursive conversion for any converted array
      * elements or object properties.
      *
      * @param value
@@ -312,18 +312,22 @@ class Converter {
             this.parameter = parameter;
         }
 
+        @Override
         public Parameter getParameter() {
             return parameter;
         }
 
+        @Override
         protected Factory<List<Object>> newListFactory(final List<Object> source) {
             return Converter.getList(parameter, source);
         }
 
+        @Override
         protected Factory<Map<String, Object>> newMapFactory(final Map<String, Object> source) {
             return Converter.getMap(parameter, source);
         }
 
+        @Override
         protected Object convertFunction(final Function<?> source) {
             return source;
         }
@@ -338,18 +342,22 @@ class Converter {
             this.parameter = parameter;
         }
 
+        @Override
         public Parameter getParameter() {
             return parameter;
         }
 
+        @Override
         protected Factory<List<Object>> newListFactory(final List<Object> source) {
             return Converter.getList(parameter, source);
         }
 
+        @Override
         protected Factory<Map<String, Object>> newMapFactory(final Map<String, Object> source) {
             return Converter.getMap(parameter, source);
         }
 
+        @Override
         protected Object convertFunction(final Function<?> source) {
             return source;
         }

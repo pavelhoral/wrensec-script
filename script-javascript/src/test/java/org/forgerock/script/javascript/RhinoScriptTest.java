@@ -1,8 +1,12 @@
 package org.forgerock.script.javascript;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.script.SimpleBindings;
@@ -91,6 +95,27 @@ public class RhinoScriptTest {
         CompiledScript script = loadScript("main.js");
         script.eval(null, null);
         script.eval(null, null);
+    }
+
+    @Test
+    public void testObjectAssign() throws Exception {
+        CompiledScript script = loadScript("wrapper.js");
+
+        Map<String, String> javaMap = new HashMap<>();
+        javaMap.put("HELLO", "WORLD");
+
+        List<String> javaList = new ArrayList<>();
+        javaList.add("bar");
+        javaList.add("baz");
+
+        Map<String, Object> globalScope = new HashMap<>();
+        globalScope.put("javaMap", javaMap);
+        globalScope.put("javaList", javaList);
+
+        Object result = script.eval(null, new SimpleBindings(globalScope));
+
+        assertTrue(result instanceof Map);
+        assertEquals(((Map<?, ?>) result).get("foo"), List.of("bar", "baz"));
     }
 
 }
